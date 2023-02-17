@@ -174,7 +174,7 @@ def evaluate_real_aftershock_model(earthquake_name):
     
     axs3.legend(fontsize=14)
     axs3.figure.tight_layout()
-    axs3.figure.savefig(folder+eq_name+'_'+model+'_performance.png', dpi=300)
+    axs3.figure.savefig('../output/'+eq_name+'_'+model+'_performance.png', dpi=300)
     # axs3.figure.savefig(folder+eq_name+'_'+model+'_performance.svg')
 
 
