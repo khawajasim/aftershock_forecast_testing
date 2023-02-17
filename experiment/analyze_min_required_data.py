@@ -212,7 +212,7 @@ def main():
     axs1.legend(fontsize=14)
     axs1.set_xlabel('Percentage of Active cells (%)', fontsize=14)
     # axs1.set_ylabel('Perforamnce difference: $\delta$CFS($1^{th}$) - R($99^{th}$)', fontsize=14)
-    axs1.set_ylabel('Quantile distance: $\Delta$ CFS(1\%) - R(99\%)', fontsize=14)
+    axs1.set_ylabel('Quantile distance: $\Delta$CFS(1%) - R(99%)', fontsize=14)
     fig1.tight_layout()
     axs1.figure.savefig('output/active_cells_ratio_FN=0_10.png', dpi=300)
     axs1.figure.savefig('output/active_cells_ratio_FN=0_10.svg')
