@@ -14,7 +14,7 @@ import pandas
 # import json
 from experiment.grid_operations import bounds_to_polygons, create_square_grid_bounds, create_circular_grid, forecast_aggregation
 from experiment.evaluations import calc_ROC_MCCF1, calc_mccf1_metric
-from experiment.utils import write_geojson_feature, generate_gridded_eqs, plot_performance_distribution
+from experiment.utils import generate_gridded_eqs, plot_performance_distribution #write_geojson_feature, 
 import experiment.config as config
 
 def main():
@@ -82,8 +82,8 @@ def main():
         
         stress_data = numpy.column_stack((stress_data, static_stress))
         model_grid = bounds_to_polygons(cell_bounds)
-        filename = 'forecast_data/model_grid_ref'
-        write_geojson_feature(model_grid,stress_data[:,4],filename)
+        # filename = 'forecast_data/model_grid_ref'
+        # write_geojson_feature(model_grid,stress_data[:,4],filename)
     
     
     #-----SQUARE TEST GRID
@@ -107,19 +107,19 @@ def main():
     
     if config.aggregation:
         square_grid_oop = forecast_aggregation(square_grid, model_grid, stress_data[:,3])
-        write_geojson_feature(square_grid,square_grid_oop,'forecast_data/square_grid_mas_'+str(numpy.size(square_grid)))
+        # write_geojson_feature(square_grid,square_grid_oop,'forecast_data/square_grid_mas_'+str(numpy.size(square_grid)))
         
         square_grid_ref = forecast_aggregation(square_grid, model_grid, stress_data[:,4])
-        write_geojson_feature(square_grid, square_grid_ref, 'forecast_data/square_grid_ref_'+str(numpy.size(square_grid)))
+        # write_geojson_feature(square_grid, square_grid_ref, 'forecast_data/square_grid_ref_'+str(numpy.size(square_grid)))
         
         stress_data_square = numpy.column_stack((square_grid_oop, square_grid_ref))
         
         
         circle_grid_oop = forecast_aggregation(circle_grid, model_grid, stress_data[:,3])
-        write_geojson_feature(circle_grid, circle_grid_oop,'forecast_data/circle_grid_mas_'+str(numpy.size(circle_grid)))
+        # write_geojson_feature(circle_grid, circle_grid_oop,'forecast_data/circle_grid_mas_'+str(numpy.size(circle_grid)))
         
         circle_grid_ref = forecast_aggregation(circle_grid, model_grid, stress_data[:,4])
-        write_geojson_feature(circle_grid, circle_grid_ref,'forecast_data/circle_grid_ref_'+str(numpy.size(circle_grid)))
+        # write_geojson_feature(circle_grid, circle_grid_ref,'forecast_data/circle_grid_ref_'+str(numpy.size(circle_grid)))
         
         stress_data_circle = numpy.column_stack((circle_grid_oop, circle_grid_ref))
         numpy.savetxt(fname_square, 

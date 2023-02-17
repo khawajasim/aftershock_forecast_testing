@@ -15,6 +15,6 @@ import time
 if __name__ == "__main__":
     start_time = time.time()
     run()
-    print("Time to Generate all Figures (mins) :" % (time.time() - start_time)/60)
+    print("Time to Generate all Figures (mins) :", (time.time() - start_time)/60)
 
 

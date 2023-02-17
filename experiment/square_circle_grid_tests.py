@@ -10,7 +10,7 @@ import pandas
 import matplotlib.pyplot as plt
 from experiment.grid_operations import bounds_to_polygons, create_square_grid_bounds, create_circular_grid, forecast_aggregation
 from experiment.evaluations import calc_ROC_MCCF1, calc_mccf1_metric
-from experiment.utils import write_geojson_feature, generate_gridded_eqs, plot_grid_polygon
+from experiment.utils import  generate_gridded_eqs, plot_grid_polygon #write_geojson_feature,
 import experiment.config as config
 
 
@@ -40,7 +40,7 @@ def main():
         dh = numpy.diff(numpy.unique(stress_data[:,1]))[0]
         cell_bounds = numpy.column_stack((stress_data[:,:2], stress_data[:,:2]+dh))
         model_grid = bounds_to_polygons(cell_bounds)
-        filename = '../data/model_grid_mas_rescaledCoords'
+        # filename = 'data/model_grid_mas_rescaledCoords'
     #    write_geojson_feature(model_grid,stress_data[:,3],filename )
         ###--========-- Convert the forecast points into grid cells here .....
         
@@ -78,8 +78,8 @@ def main():
         
         stress_data = numpy.column_stack((stress_data, static_stress))
         model_grid = bounds_to_polygons(cell_bounds)
-        filename = '../data/model_grid_ref'
-        write_geojson_feature(model_grid,stress_data[:,4],filename)
+        # filename = '../data/model_grid_ref'
+        # write_geojson_feature(model_grid,stress_data[:,4],filename)
     
     
     #-----SQUARE TEST GRID
@@ -93,7 +93,7 @@ def main():
     circle_grid = create_circular_grid(radius_max, r_seg, a_seg, origin = org)
     
     ax = plot_grid_polygon(circle_grid)
-    ax.figure.savefig('../output/radial_grid.png', dpi=300)
+    ax.figure.savefig('output/radial_grid.png', dpi=300)
     
     if config.stress_MAS:
             fname_square = 'data/square_grid_aggregated_stress_'+str(len(square_grid))+'_MAS.csv'
@@ -169,7 +169,7 @@ def main():
         #---- FNs = 6
     FNs = [0,1, 2,3,4,5,6,7]
     for fn in FNs:
-            print('False Negative :',fn)
+            # print('False Negative :',fn)
     
             square_grid_arranged, stress_data_square_arranged = generate_gridded_eqs(square_grid, stress_data_square,
                                                                                     model_type=config.model_for_sim, Num_eqs=[config.total_eqs-fn, fn])

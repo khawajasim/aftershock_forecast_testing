@@ -12,4 +12,5 @@ dependencies:
   - pip
   - pip:
     - copy
-    - labellines=0.5.1
+    - matplotlib-label-lines
+    #- matplotlib-label-lines==0.5.1
