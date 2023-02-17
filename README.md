@@ -16,7 +16,8 @@
 git clone https://github.com/khawajasim/aftershock_forecast_testing.git
 cd aftershock_forecast_testing
 conda env create -f environment.yml
-conda activate ----
+conda activate test_aftershocks
+pip install matplotlib-label-lines (because this is not available from conda-forge)
 ```
 
 Installs dependencies to run the experiment. See `environment.yml` file for details.
