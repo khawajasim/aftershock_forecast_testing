@@ -162,7 +162,7 @@ def evaluate_real_aftershock_model(earthquake_name):
         mcc_f1_ref.append(mcc_f1)
 
     
-    grid_label = ['L12', 'L13', 'L14','Multi_res'] #' 
+    grid_label = ['L12', 'L13']#, 'L14','Multi_res'] #' 
     fig3, axs3 = plt.subplots()
     fig3.set_size_inches(8, 6)
     

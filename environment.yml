@@ -12,5 +12,4 @@ dependencies:
   - pip
   - pip:
     - copy
-    - json=2.0.9
     - labellines=0.5.1

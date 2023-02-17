@@ -7,10 +7,10 @@ Created on Wed Nov  2 17:22:22 2022
 """
 import numpy
 import numpy as np
-import json 
+# import json 
 import mercantile
 import matplotlib.pyplot as plt
-from shapely.geometry import mapping # box, shape, mapping, Point, Polygon
+# from shapely.geometry import mapping # box, shape, mapping, Point, Polygon
 from labellines import labelLines
 
 
@@ -189,44 +189,44 @@ def generate_active_cells(stress_data, Num_eqs=[137, 0], for_all_positive=False,
     return stress_eqs
 
 
-def write_geojson_feature(grid_polygons,feature, filename):
-    """
-    Write coordsniates along with feature
-    This functions takes in Shape.Geometery type list of shapes (polygon or point) and writes
-    them in the format of geojason file. The geojason file will be then used to plot in QGIS
+# def write_geojson_feature(grid_polygons,feature, filename):
+#     """
+#     Write coordsniates along with feature
+#     This functions takes in Shape.Geometery type list of shapes (polygon or point) and writes
+#     them in the format of geojason file. The geojason file will be then used to plot in QGIS
 
-    Parameters
-    ----------
-    shape_list : List of Shapely.geometery
-        Bounding boxes or points or lines that are used for display in QGIS
-    filename : string
-        Intended name of GEOJSON file
+#     Parameters
+#     ----------
+#     shape_list : List of Shapely.geometery
+#         Bounding boxes or points or lines that are used for display in QGIS
+#     filename : string
+#         Intended name of GEOJSON file
 
-    Returns 
-    -------
-    GEOJSON file
+#     Returns 
+#     -------
+#     GEOJSON file
 
-    """
-    shape_list=[] #Converting to the proper format. 
-    for poly in grid_polygons:
-        shape_list.append(mapping(poly))
+#     """
+#     shape_list=[] #Converting to the proper format. 
+#     for poly in grid_polygons:
+#         shape_list.append(mapping(poly))
         
         
-    geo_shape = {"type":"FeatureCollection",
-                  "features":[]}
-    for bb, ff in zip(shape_list, feature):
-        feature = {"type":"Feature",
-              "properties":{"feature1": ff,
-                            },
-                  "geometry":bb};
-        geo_shape['features'].append(feature)
+#     geo_shape = {"type":"FeatureCollection",
+#                   "features":[]}
+#     for bb, ff in zip(shape_list, feature):
+#         feature = {"type":"Feature",
+#               "properties":{"feature1": ff,
+#                             },
+#                   "geometry":bb};
+#         geo_shape['features'].append(feature)
 
-#   poly['features'][0]['geometry']['coordinates']
+# #   poly['features'][0]['geometry']['coordinates']
 
-    with open(filename+'.geojson', 'w') as f:
-        json.dump(geo_shape, f)
+#     with open(filename+'.geojson', 'w') as f:
+#         json.dump(geo_shape, f)
     
-    return geo_shape
+#     return geo_shape
 
 
 

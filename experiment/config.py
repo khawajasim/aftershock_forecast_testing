@@ -35,4 +35,4 @@ num_sim = 3
 
 
 #8 - Grids to run the experiment for Chichi and Landers
-grids = ['_single_res_grid_zoom=12','_single_res_grid_zoom=13','_single_res_grid_zoom=14','_multi_res_grid'] #
+grids = ['_single_res_grid_zoom=12','_single_res_grid_zoom=13']#,'_single_res_grid_zoom=14','_multi_res_grid'] #

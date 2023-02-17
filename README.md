@@ -13,6 +13,8 @@
 ### From conda-forge
 
 ```
+git clone https://github.com/khawajasim/aftershock_forecast_testing.git
+cd aftershock_forecast_testing
 conda env create -f environment.yml
 conda activate ----
 ```
@@ -34,4 +36,4 @@ Usage:
 ```
 python run_experiment ```
 
-The resulting figures will be stored in the folder "Results".
+The resulting figures will be stored in the folder "output".

@@ -11,7 +11,7 @@ import experiment.square_circle_grid_tests_multi_run as multi_run
 import experiment.aftershocks_tests_real_data as real_test
 import experiment.analyze_min_required_data as min_data
 
-folder = '../output/'
+folder = 'output/'
 
 if not os.path.exists(folder):
     os.mkdir(folder)
