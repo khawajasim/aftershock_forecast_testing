@@ -20,7 +20,7 @@ conda activate ----
 Installs dependencies to run the experiment. See `environment.yml` file for details.
 
 
-## Retrieve Models
+## Setup experiment
 
 All the data required to run experiment are contained in the repository.
 The default parameters to run the experiment are adjusted experiment/config.py. No extra step is needed. The parameters can be adjusted manually.
