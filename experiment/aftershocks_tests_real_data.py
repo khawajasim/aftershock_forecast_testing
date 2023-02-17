@@ -8,10 +8,10 @@ Created on Fri Nov  4 17:05:38 2022
 import numpy
 import pandas
 #from utils import grid_origin_coordinates, grid_top_right_coordinates #, geographical_area_from_bounds, write_geojson_feature
-from grid_operations import locate_eq_to_grid3D #forecast_aggregation_bounds, bounds_to_polygons, 
-from evaluations import calc_ROC_MCCF1, calc_mccf1_metric
+from experiment.grid_operations import locate_eq_to_grid3D #forecast_aggregation_bounds, bounds_to_polygons, 
+from experiment.evaluations import calc_ROC_MCCF1, calc_mccf1_metric
 import matplotlib.pyplot as plt
-import config
+import experiment.config as config
 #from shapely.geometry import Point
 
 # which_earthquake =  'chichi'  #'landers' # #  #'
@@ -36,7 +36,7 @@ def evaluate_real_aftershock_model(earthquake_name):
     auc_ref = []
     mcc_f1_cfs = []
     mcc_f1_ref = []
-    folder ='../data/' 
+    folder ='data/' 
 
     
     display_depth=7.5
@@ -49,7 +49,7 @@ def evaluate_real_aftershock_model(earthquake_name):
     # cat = cat[cat[:,3]>=6]
     # numpy.savetxt(folder+folder[:-1]+'_cat_L14km.csv', cat, delimiter=',', header='lat,lon,mag,depth', comments='')
     
-    colors=['black','red','blue','green']
+    # colors=['black','red','blue','green']
     #1- Get the stress data (Chihi, Kashmir, or anyother)
     # ------stress for a grid...
     
@@ -69,8 +69,8 @@ def evaluate_real_aftershock_model(earthquake_name):
             stress = stress[stress[:,5] <=32]
         
         print(grid)
-        print(colors[i])
-        print('Stress len :',len(stress))
+        # print(colors[i])
+        # print('Stress len :',len(stress))
     
     #2- Get a grid
     
@@ -131,7 +131,7 @@ def evaluate_real_aftershock_model(earthquake_name):
         gridded_cat = locate_eq_to_grid3D(stress[:,:6], cat)
         print('------Total Gridded EQs :', sum(gridded_cat))
         
-        print('The Percentage of active cells :', len(gridded_cat[gridded_cat>0]) / len(gridded_cat) *100)
+        print('-----The Percentage of active cells :', len(gridded_cat[gridded_cat>0]) / len(gridded_cat) *100)
     
         #5- Run the test
         oop_ROCdata, oop_MCC_F1 = calc_ROC_MCCF1(stress_data, gridded_cat)
@@ -174,7 +174,7 @@ def evaluate_real_aftershock_model(earthquake_name):
     
     axs3.legend(fontsize=14)
     axs3.figure.tight_layout()
-    axs3.figure.savefig('../output/'+eq_name+'_'+model+'_performance.png', dpi=300)
+    axs3.figure.savefig('output/'+eq_name+'_'+model+'_performance.png', dpi=300)
     # axs3.figure.savefig(folder+eq_name+'_'+model+'_performance.svg')
 
 

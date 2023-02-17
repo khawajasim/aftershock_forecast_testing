@@ -258,7 +258,7 @@ def forecast_aggregation(test_grid, model_grid, stress_value, by_addition=False)
                    l=l+1 
                    test_stress[i] = test_stress[i]+ stress_value[j] #((p1.intersection(p2).area /p2.area) * stress[j] )
             test_stress[i] = test_stress[i]/l * p1.area
-            print('Cell ',i, ' took ',l, ' Points')
+            # print('Cell ',i, ' took ',l, ' Points')
 #            points_taken = points_taken+l
         
           

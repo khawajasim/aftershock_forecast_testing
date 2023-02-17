@@ -45,7 +45,7 @@ def plot_performance_distribution(performance_metric_cfs,performance_metric_ref,
     axs.legend(legend, fontsize=14)
     
     for i in range(1,len(FNs)):
-        print(i)
+        # print(i)
         axs.plot(np.histogram(performance_metric_cfs[1:,i], bins=nbins)[1][:-1], np.cumsum(np.histogram(performance_metric_cfs[1:,i], bins=nbins)[0]),
                color='r', label='SE='+str(int(FNs[i])), alpha=0.8, linestyle='dotted')
     labelLines(axs.get_lines(), zorder=5, align = True)
@@ -149,10 +149,10 @@ def generate_active_cells(stress_data, Num_eqs=[137, 0], for_all_positive=False,
         #----Generate earthquakes for positive stress using Reference model (Distance based stress)
         eqs=0
         if model_type == 'ref':
-            print('Simulating EQs based on Ref model ...')
+            # print('Simulating EQs based on Ref model ...')
             probmap_positive = stress_positive[:,4]
         elif model_type == 'coulomb':
-            print('Simulating EQs based on Coulomb model ...')
+            # print('Simulating EQs based on Coulomb model ...')
             probmap_positive = stress_positive[:,3]
         else:
             print('Choose the correct model type for catalog generation')
@@ -164,7 +164,7 @@ def generate_active_cells(stress_data, Num_eqs=[137, 0], for_all_positive=False,
             if events_positive_stress[loc] == 0:
                 numpy.add.at(events_positive_stress, loc, 1)
                 eqs = eqs+1
-        print('---Positive stress earthquakes generated: ', eqs)
+        # print('---Positive stress earthquakes generated: ', eqs)
 #        
    
         #----Generate earthquakes for Negative stress using Reference model (Distance based stress)
@@ -178,7 +178,7 @@ def generate_active_cells(stress_data, Num_eqs=[137, 0], for_all_positive=False,
             if events_negative_stress[loc] == 0:
                 numpy.add.at(events_negative_stress, loc, 1)
                 eqs = eqs+1
-        print('---Negative stress earthquakes generated: ', eqs)
+        # print('---Negative stress earthquakes generated: ', eqs)
 #        stress_negative_eqs = numpy.column_stack((stress_negative, events_negative_stress)) 
 
     #Appending all positive and negative earthquakes to respective stress data.

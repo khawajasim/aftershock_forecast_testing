@@ -8,10 +8,10 @@ Created on Tue Jul 12 16:08:12 2022
 import numpy
 import pandas
 import matplotlib.pyplot as plt
-from grid_operations import bounds_to_polygons, create_square_grid_bounds, create_circular_grid, forecast_aggregation
-from evaluations import calc_ROC_MCCF1, calc_mccf1_metric
-from utils import write_geojson_feature, generate_gridded_eqs, plot_grid_polygon
-import config
+from experiment.grid_operations import bounds_to_polygons, create_square_grid_bounds, create_circular_grid, forecast_aggregation
+from experiment.evaluations import calc_ROC_MCCF1, calc_mccf1_metric
+from experiment.utils import write_geojson_feature, generate_gridded_eqs, plot_grid_polygon
+import experiment.config as config
 
 
 def main():
@@ -96,11 +96,11 @@ def main():
     ax.figure.savefig('../output/radial_grid.png', dpi=300)
     
     if config.stress_MAS:
-            fname_square = '../data/square_grid_aggregated_stress_'+str(len(square_grid))+'_MAS.csv'
-            fname_circle = '../data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_MAS.csv'
+            fname_square = 'data/square_grid_aggregated_stress_'+str(len(square_grid))+'_MAS.csv'
+            fname_circle = 'data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_MAS.csv'
     else:
-            fname_square = '../data/square_grid_aggregated_stress_'+str(len(square_grid))+'_OOP.csv'
-            fname_circle = '../data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_OOP.csv'
+            fname_square = 'data/square_grid_aggregated_stress_'+str(len(square_grid))+'_OOP.csv'
+            fname_circle = 'data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_OOP.csv'
     
     if config.aggregation:
         # ---------Aggregate on Square grid
@@ -185,8 +185,8 @@ def main():
             oop_stress = stress_data_square_arranged[:,0]
             static_stress = stress_data_square_arranged[:,1]
             earthquakes = stress_data_square_arranged[:,2]
-            print('No. of Active cells for SQUARE Grid:', len(earthquakes[earthquakes>0]))
-            print('----Active FNs cells in SQUARE Grid:', len(oop_stress[numpy.logical_and(earthquakes>0, oop_stress<0)]))
+            # print('No. of Active cells for SQUARE Grid:', len(earthquakes[earthquakes>0]))
+            # print('----Active FNs cells in SQUARE Grid:', len(oop_stress[numpy.logical_and(earthquakes>0, oop_stress<0)]))
             
             #--- ------Plot ROC OOP stress
             oop_ROCdata, oop_MCC_F1 = calc_ROC_MCCF1(oop_stress, earthquakes)
@@ -219,10 +219,6 @@ def main():
             auc = numpy.round(abs(numpy.trapz(tpr, fpr)), 3)
             if fn ==0:
                 axs1.plot(fpr, tpr, label = 'Reference Model AUC='+str(auc), color='blue', alpha=1)
-            # elif fn == FNs[-1]:
-            #     axs1.plot(fpr, tpr, label = 'Reference Model AUC='+str(auc), color='blue', alpha=0.20)
-            # else:
-            #     axs1.plot(fpr, tpr,color='blue', alpha=0.20) # label = 'Reference AUC FN_'+str(fn)+'='+str(auc), 
                 
             f1 = static_MCC_F1[:,0]
             mcc = static_MCC_F1[:,1]
@@ -239,8 +235,8 @@ def main():
             oop_stress = stress_data_circle_arranged[:,0]
             static_stress = stress_data_circle_arranged[:,1]
             earthquakes = stress_data_circle_arranged[:,2]
-            print('No. of Active cells for CIRCULAR Grid:', len(earthquakes[earthquakes>0]))
-            print('----Active FNs cells in CIRCULAR Grid:', len(oop_stress[numpy.logical_and(earthquakes>0, oop_stress<0)]))
+            # print('No. of Active cells for CIRCULAR Grid:', len(earthquakes[earthquakes>0]))
+            # print('----Active FNs cells in CIRCULAR Grid:', len(oop_stress[numpy.logical_and(earthquakes>0, oop_stress<0)]))
     
             
             #--- ------Plot ROC OOP stress
@@ -312,10 +308,10 @@ def main():
         stress_name = 'OOP'
         
     if config.save_results:
-        axs1.figure.savefig('../output/Fig2a_Square_grid_ROC_'+stress_name+'_:_'+config.model_for_sim+'.png', dpi=300) #Fig2a
-        axs2.figure.savefig('../output/Fig2c_Square_grid_MCC-F1_'+stress_name+'_:_'+config.model_for_sim+'.png',dpi=300) #Fig2c
-        axs3.figure.savefig('../output/Fig3a_Circular_grid_ROC_'+stress_name+'_:_'+config.model_for_sim+'.png', dpi=300) #Fig3a
-        axs4.figure.savefig('../output/Fig3c_Circular_grid_MCC-F1_'+stress_name+'_:_'+config.model_for_sim+'.png', dpi=300) #Fig3c
+        axs1.figure.savefig('output/Fig2a_Square_grid_ROC_'+stress_name+'_:_'+config.model_for_sim+'.png', dpi=300) #Fig2a
+        axs2.figure.savefig('output/Fig2c_Square_grid_MCC-F1_'+stress_name+'_:_'+config.model_for_sim+'.png',dpi=300) #Fig2c
+        axs3.figure.savefig('output/Fig3a_Circular_grid_ROC_'+stress_name+'_:_'+config.model_for_sim+'.png', dpi=300) #Fig3a
+        axs4.figure.savefig('output/Fig3c_Circular_grid_MCC-F1_'+stress_name+'_:_'+config.model_for_sim+'.png', dpi=300) #Fig3c
         
     
 if __name__ == "__main__":

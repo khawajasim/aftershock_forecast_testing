@@ -12,16 +12,16 @@ import pandas
 # import matplotlib.pyplot as plt
 # from shapely.geometry import box, shape, mapping, Point, Polygon
 # import json
-from grid_operations import bounds_to_polygons, create_square_grid_bounds, create_circular_grid, forecast_aggregation
-from evaluations import calc_ROC_MCCF1, calc_mccf1_metric
-from utils import write_geojson_feature, generate_gridded_eqs, plot_performance_distribution
-import config
+from experiment.grid_operations import bounds_to_polygons, create_square_grid_bounds, create_circular_grid, forecast_aggregation
+from experiment.evaluations import calc_ROC_MCCF1, calc_mccf1_metric
+from experiment.utils import write_geojson_feature, generate_gridded_eqs, plot_performance_distribution
+import experiment.config as config
 
 def main():
     print ('Generating Figure 2b, 2d, 3b, 3d .....')
     if config.aggregation:
         #---------------Start of code
-        events = pandas.read_pickle('../data/calculated_stress.pkl')
+        events = pandas.read_pickle('data/calculated_stress.pkl')
         stress_data = events.to_numpy()
         depth = 7 #5 if Event_3
         stress_data = stress_data[stress_data[:,2] == depth]
@@ -41,7 +41,7 @@ def main():
         dh = numpy.diff(numpy.unique(stress_data[:,1]))[0]
         cell_bounds = numpy.column_stack((stress_data[:,:2], stress_data[:,:2]+dh))
         model_grid = bounds_to_polygons(cell_bounds)
-        filename = '../data/model_grid_mas_rescaledCoords'
+        filename = 'data/model_grid_mas_rescaledCoords'
     #    write_geojson_feature(model_grid,stress_data[:,3],filename )
         ###--========-- Convert the forecast points into grid cells here .....
         if config.stress_MAS:
@@ -98,11 +98,11 @@ def main():
     
     
     if config.stress_MAS:
-            fname_square = '../data/square_grid_aggregated_stress_'+str(len(square_grid))+'_MAS.csv'
-            fname_circle = '../data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_MAS.csv'
+            fname_square = 'data/square_grid_aggregated_stress_'+str(len(square_grid))+'_MAS.csv'
+            fname_circle = 'data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_MAS.csv'
     else:
-            fname_square = '../data/square_grid_aggregated_stress_'+str(len(square_grid))+'_OOP.csv'
-            fname_circle = '../data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_OOP.csv'
+            fname_square = 'data/square_grid_aggregated_stress_'+str(len(square_grid))+'_OOP.csv'
+            fname_circle = 'data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_OOP.csv'
     
     
     if config.aggregation:
@@ -168,7 +168,7 @@ def main():
     #for grid in grid_types:
         #---- FNs = 6
         for fn in FNs:
-            print('False Negative :',fn)
+            # print('False Negative :',fn)
             square_grid_arranged, stress_data_square_arranged = generate_gridded_eqs(square_grid, stress_data_square, 
                                                                                      model_type=config.model_for_sim, Num_eqs=[config.total_eqs-fn, fn])
             #write_geojson_feature(square_grid_arranged.tolist(), stress_data_square_arranged[:,2],
@@ -183,8 +183,8 @@ def main():
             oop_stress = stress_data_square_arranged[:,0]
             static_stress = stress_data_square_arranged[:,1]
             earthquakes = stress_data_square_arranged[:,2]
-            print('No. of Active cells for SQUARE Grid:', len(earthquakes[earthquakes>0]))
-            print('----Active FNs cells in SQUARE Grid:', len(oop_stress[numpy.logical_and(earthquakes>0, oop_stress<0)]))
+            # print('No. of Active cells for SQUARE Grid:', len(earthquakes[earthquakes>0]))
+            # print('----Active FNs cells in SQUARE Grid:', len(oop_stress[numpy.logical_and(earthquakes>0, oop_stress<0)]))
             
             #--- ------Plot ROC OOP stress
             oop_ROCdata, oop_MCC_F1 = calc_ROC_MCCF1(oop_stress, earthquakes)
@@ -214,8 +214,8 @@ def main():
             oop_stress = stress_data_circle_arranged[:,0]
             static_stress = stress_data_circle_arranged[:,1]
             earthquakes = stress_data_circle_arranged[:,2]
-            print('No. of Active cells for CIRCULAR Grid:', len(earthquakes[earthquakes>0]))
-            print('----Active FNs cells in CIRCULAR Grid:', len(oop_stress[numpy.logical_and(earthquakes>0, oop_stress<0)]))
+            # print('No. of Active cells for CIRCULAR Grid:', len(earthquakes[earthquakes>0]))
+            # print('----Active FNs cells in CIRCULAR Grid:', len(oop_stress[numpy.logical_and(earthquakes>0, oop_stress<0)]))
         
                 
             #--- ------Plot ROC OOP stress
@@ -285,10 +285,10 @@ def main():
         stress_name = 'OOP'
     
     if config.save_results:
-        axs1.figure.savefig('../output/Fig2b_Square_grid_ROC_'+stress_name+'_:_'+config.model_for_sim+'_cumulative.png', dpi = 300) #fig2b
-        axs2.figure.savefig('../output/Fig3b_Circular_grid_ROC_'+stress_name+'_:_'+config.model_for_sim+'_cumulative.png', dpi=300) #fig3b
-        axs3.figure.savefig('../output/Fig2d_Square_grid_MCC-F1_'+stress_name+'_:_'+config.model_for_sim+'_cumulative.png', dpi=300) #fig2d
-        axs4.figure.savefig('../output/Fig3d_Circle_grid_MCC-F1_'+stress_name+'_:_'+config.model_for_sim+'_cumulative.png', dpi=300) #fig3d
+        axs1.figure.savefig('output/Fig2b_Square_grid_ROC_'+stress_name+'_:_'+config.model_for_sim+'_cumulative.png', dpi = 300) #fig2b
+        axs2.figure.savefig('output/Fig3b_Circular_grid_ROC_'+stress_name+'_:_'+config.model_for_sim+'_cumulative.png', dpi=300) #fig3b
+        axs3.figure.savefig('output/Fig2d_Square_grid_MCC-F1_'+stress_name+'_:_'+config.model_for_sim+'_cumulative.png', dpi=300) #fig2d
+        axs4.figure.savefig('output/Fig3d_Circle_grid_MCC-F1_'+stress_name+'_:_'+config.model_for_sim+'_cumulative.png', dpi=300) #fig3d
     
 
 if __name__ == "__main__":
