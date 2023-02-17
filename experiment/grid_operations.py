@@ -5,12 +5,12 @@ Created on Fri Sep 23 15:20:42 2022
 
 @author: khawaja
 """
-import json
-import matplotlib.pyplot as plt
+# import json
+# import matplotlib.pyplot as plt
 import numpy as np
 import numpy
-from shapely.geometry import Point, LineString, Polygon, mapping, GeometryCollection, box
-from shapely.ops import cascaded_union, polygonize, unary_union
+from shapely.geometry import Point, Polygon, box #GeometryCollection, LineString, mapping, 
+# from shapely.ops import cascaded_union, polygonize, unary_union
 import copy
 
 def get_circumference_points(radius, number_of_points):

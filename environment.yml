@@ -11,3 +11,5 @@ dependencies:
   - labellines=0.5.1
   - json=2.0.9
   - mercantile=1.2.1
+  - copy
+  - json=2.0.9
