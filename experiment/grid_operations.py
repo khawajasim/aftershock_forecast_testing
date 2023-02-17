@@ -25,83 +25,83 @@ def get_circumference_points(radius, number_of_points):
     return list_of_points
 
 
-def write_geojson(grid_polygons,filename):
-    """
-    This functions takes in Shape.Geometery type list of shapes and writes
-    them in the format of geojason file. The geojason file will be then used to plot in QGIS
+# def write_geojson(grid_polygons,filename):
+#     """
+#     This functions takes in Shape.Geometery type list of shapes and writes
+#     them in the format of geojason file. The geojason file will be then used to plot in QGIS
 
-    Parameters
-    ----------
-    shape_list : List of Shapely.geometery
-        Bounding boxes or points or lines that are used for display in QGIS
-    filename : string
-        Intended name of GEOJSON file
+#     Parameters
+#     ----------
+#     shape_list : List of Shapely.geometery
+#         Bounding boxes or points or lines that are used for display in QGIS
+#     filename : string
+#         Intended name of GEOJSON file
 
-    Returns 
-    -------
-    GEOJSON file
+#     Returns 
+#     -------
+#     GEOJSON file
 
-    """
-    shape_list=[] #Converting to the proper format. 
-    for poly in grid_polygons:
-        shape_list.append(mapping(poly))
+#     """
+#     shape_list=[] #Converting to the proper format. 
+#     for poly in grid_polygons:
+#         shape_list.append(mapping(poly))
         
         
-    geo_shape = {"type":"FeatureCollection",
-                  "features":[]}
-    for bb in shape_list:
-#        print(bb.centroid)
-        feature = {"type":"Feature",
-              "properties":{"some_parameter": "XYZ",
-                            },
-                  "geometry":bb};
-        geo_shape['features'].append(feature)
+#     geo_shape = {"type":"FeatureCollection",
+#                   "features":[]}
+#     for bb in shape_list:
+# #        print(bb.centroid)
+#         feature = {"type":"Feature",
+#               "properties":{"some_parameter": "XYZ",
+#                             },
+#                   "geometry":bb};
+#         geo_shape['features'].append(feature)
 
-#   poly['features'][0]['geometry']['coordinates']
+# #   poly['features'][0]['geometry']['coordinates']
 
-    with open(filename+'.geojson', 'a') as f:
-        json.dump(geo_shape, f)
+#     with open(filename+'.geojson', 'a') as f:
+#         json.dump(geo_shape, f)
     
-    return geo_shape
+#     return geo_shape
 
-def write_geojson_feature(grid_polygons,feature, filename):
-    """
-    Write coordsniates along with feature
-    This functions takes in Shape.Geometery type list of shapes (polygon or point) and writes
-    them in the format of geojason file. The geojason file will be then used to plot in QGIS
+# def write_geojson_feature(grid_polygons,feature, filename):
+#     """
+#     Write coordsniates along with feature
+#     This functions takes in Shape.Geometery type list of shapes (polygon or point) and writes
+#     them in the format of geojason file. The geojason file will be then used to plot in QGIS
 
-    Parameters
-    ----------
-    shape_list : List of Shapely.geometery
-        Bounding boxes or points or lines that are used for display in QGIS
-    filename : string
-        Intended name of GEOJSON file
+#     Parameters
+#     ----------
+#     shape_list : List of Shapely.geometery
+#         Bounding boxes or points or lines that are used for display in QGIS
+#     filename : string
+#         Intended name of GEOJSON file
 
-    Returns 
-    -------
-    GEOJSON file
+#     Returns 
+#     -------
+#     GEOJSON file
 
-    """
-    shape_list=[] #Converting to the proper format. 
-    for poly in grid_polygons:
-        shape_list.append(mapping(poly))
+#     """
+#     shape_list=[] #Converting to the proper format. 
+#     for poly in grid_polygons:
+#         shape_list.append(mapping(poly))
         
         
-    geo_shape = {"type":"FeatureCollection",
-                  "features":[]}
-    for bb, ff in zip(shape_list, feature):
-        feature = {"type":"Feature",
-              "properties":{"feature1": ff,
-                            },
-                  "geometry":bb};
-        geo_shape['features'].append(feature)
+#     geo_shape = {"type":"FeatureCollection",
+#                   "features":[]}
+#     for bb, ff in zip(shape_list, feature):
+#         feature = {"type":"Feature",
+#               "properties":{"feature1": ff,
+#                             },
+#                   "geometry":bb};
+#         geo_shape['features'].append(feature)
 
-#   poly['features'][0]['geometry']['coordinates']
+# #   poly['features'][0]['geometry']['coordinates']
 
-    with open(filename+'.geojson', 'w') as f:
-        json.dump(geo_shape, f)
+#     with open(filename+'.geojson', 'w') as f:
+#         json.dump(geo_shape, f)
     
-    return geo_shape
+#     return geo_shape
 
 
 
@@ -236,6 +236,9 @@ def forecast_aggregation(test_grid, model_grid, stress_value, by_addition=False)
         test_grid: A list of polygons of test grid
         model_grid: A list of polygons of forecast grid
         stress: forecast
+    Process: If by_addition=True, then add the fraction of stress shared by the common areas.
+            If by_addition=False, then average stress of all the points touching a cell. 
+            (Since, the stress is computed for the points, so I find the latter better for aggregation.)
     """
     test_stress = numpy.zeros(len(test_grid))
 #    points_taken = 0
@@ -328,84 +331,3 @@ def locate_eq_to_grid3D(stress_coords, cat):
     
     grid_eq = numpy.array(grid_eq) 
     return grid_eq
-
-
-# #---- Arc of circles----
-# org = (0,0)
-# r_seg = 40
-# a_seg= 40
-# radius_max  = 100
-
-# circle_grid = create_circular_grid(radius_max, r_seg, a_seg, origin = org)
-# square_bounds = create_square_grid_bounds([-100,-100], [100,100],5)
-# square_grid = bounds_to_polygons(square_bounds)
-
-##cell_area = []
-##for poly in grid_poly:
-##    cell_area.append(poly.area)
-## for pp in grid_poly:
-##     xx, yy = pp.exterior.xy
-##     fig,ax = plt.subplots()
-## #    plt.plot(xx, yy)
-##     ax.plot(xx, yy)
-#    
-#
-#for pp in square_grid:
-#    xx, yy = pp.exterior.xy
-#    fig,ax = plt.subplots()
-#    ax.plot(xx, yy)
-#    #    plt.plot(xx, yy)
-#    
-#shape_list=[]
-#for poly in grid_poly:
-#    shape_list.append(mapping(poly))
-    
-#shape_list = mapping(polygon_list)
-#filename='grid_Rad_'+str(radius_max)+'_RadSeg_'+str(r_seg)+'_AngSeg_'+str(a_seg)
-
-#ss = write_geojson(grid_poly,filename)        
-
-#---Get the centroids of the polygons.
-#coords = []
-#for poly in grid_poly:
-#    coords.append([np.mean(poly.exterior.xy[0]), np.mean(poly.exterior.xy[1])])
-#coords = np.array(coords)
-#plt.scatter(coords[:,0], coords[:,1])
-
-#        
-#coords1 = polygon_list[1].exterior.coords[:]
-#coords2 = polygon_list[2].exterior.coords[:]
-#
-#coords1.pop(-1)
-#coords2.pop(-1)
-#coords2.reverse()
-#coords_com = coords1+coords2
-#poly_com = Polygon(coords_com)
-
-
-
-#-------- Playing ------
-
-#start_angle, end_angle = 30, 60 # In degrees
-#c1 = create_full_arc(2,start_angle, end_angle, origin=origin, numsegments = 1000)
-#
-#radius = 6
-#c2 = create_full_arc(radius,start_angle, end_angle, origin=origin, numsegments = 1000)
-## The coordinates of the arc
-#
-#c3 = c2.difference(c1)
-#
-#
-#a1,b1 = arc.exterior.xy
-#a2,b2 = arc_tmp.exterior.xy
-#diff = arc.difference(arc_tmp)
-#a3,b3 = diff.exterior.xy
-#new_diff = diff.difference(arc_tmp.exterior)
-#plt.plot(a1,b1)
-#plt.plot(a2,b2)
-#plt.plot(a3,b3)
-#
-#shape_list = [mapping(p1),mapping(p2),mapping(arc)]
-#filename='cic_grid_learn'
-#
-#ss = write_geojson(shape_list,filename)

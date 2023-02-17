@@ -11,6 +11,45 @@ import json
 import mercantile
 import matplotlib.pyplot as plt
 from shapely.geometry import mapping # box, shape, mapping, Point, Polygon
+from labellines import labelLines
+
+
+
+def plot_performance_distribution(performance_metric_cfs,performance_metric_ref, legend=['Coulomb Model', 'Reference Model'], nbins=50):
+    """
+    plots the performance of CFS model vs Ref model. 
+    Ref model is plotted as inverse cumulative distribution
+    CFS model is plotted as cumulative distribution, along with all the FNs,
+    
+    Args:
+        performance_metric_cfs:
+            Perforamnce of CFS: Nsim x FNs
+        performance_metric_ref:
+            performance of Ref: Nsim x FNs
+        
+    legend:
+        default arrangement of models
+    nbins
+        number of bins plotted in histogram for cumulative distribution.
+    
+    """
+    fig, axs = plt.subplots()
+    fig.set_size_inches(8,6)
+    
+    FNs = performance_metric_ref[0]
+    i=0
+    axs.plot(np.histogram(performance_metric_cfs[1:,i], bins=nbins)[1][:-1], np.cumsum(np.histogram(performance_metric_cfs[1:,i], bins=nbins)[0]),
+          color='r')  #,label='Coulomb Model' 
+    axs.plot(np.histogram(performance_metric_ref[1:,i], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(performance_metric_ref[1:,i], bins=nbins)[0])),
+            color='b') #, label='Reference Model'
+    axs.legend(legend, fontsize=14)
+    
+    for i in range(1,len(FNs)):
+        print(i)
+        axs.plot(np.histogram(performance_metric_cfs[1:,i], bins=nbins)[1][:-1], np.cumsum(np.histogram(performance_metric_cfs[1:,i], bins=nbins)[0]),
+               color='r', label='SE='+str(int(FNs[i])), alpha=0.8, linestyle='dotted')
+    labelLines(axs.get_lines(), zorder=5, align = True)
+    return axs
 
 def geographical_area_from_bounds(lon1,lat1,lon2,lat2):
     """

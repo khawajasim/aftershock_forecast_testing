@@ -8,3 +8,6 @@ dependencies:
   - shapely=1.8.0
   - matplotlib=3.7.0
   - pandas=1.4.3
+  - labellines=0.5.1
+  - json=2.0.9
+  - mercantile=1.2.1
