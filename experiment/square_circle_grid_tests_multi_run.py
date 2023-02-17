@@ -14,8 +14,7 @@ from shapely.geometry import box, shape, mapping, Point, Polygon
 import json
 from grid_operations import bounds_to_polygons, create_square_grid_bounds, create_circular_grid, forecast_aggregation
 from evaluations import calc_ROC_MCCF1, calc_mccf1_metric
-from utils import write_geojson_feature, generate_gridded_eqs
-from labellines import labelLines
+from utils import write_geojson_feature, generate_gridded_eqs, plot_performance_distribution
 
 introduce_FN = True
 aggregation = False
@@ -29,7 +28,7 @@ total_eqs = 400 #2485  #
 
 if aggregation:
     #---------------Start of code
-    events = pandas.read_pickle('coulomb_forecast/Event_4.pkl')
+    events = pandas.read_pickle('../data/calculated_stress.pkl')
     stress_data = events.to_numpy()
     depth = 7 #5 if Event_3
     stress_data = stress_data[stress_data[:,2] == depth]
@@ -49,7 +48,7 @@ if aggregation:
     dh = numpy.diff(numpy.unique(stress_data[:,1]))[0]
     cell_bounds = numpy.column_stack((stress_data[:,:2], stress_data[:,:2]+dh))
     model_grid = bounds_to_polygons(cell_bounds)
-    filename = 'square_circle/model_grid_mas_rescaledCoords'
+    filename = '../data/model_grid_mas_rescaledCoords'
 #    write_geojson_feature(model_grid,stress_data[:,3],filename )
     ###--========-- Convert the forecast points into grid cells here .....
     if stress_MAS:
@@ -71,21 +70,32 @@ if aggregation:
      #-- Generate Static Stress
      # center = [0,0]
     coords = stress_data[:,:2]
-    dist = []
+    fault_line = numpy.array([[0,yy] for yy in numpy.arange(-5,6,1)])
+
+    dist_line = []
+    # dist_point = []
     for coord in coords:
-        dist.append(numpy.sqrt(coord[0]**2 + coord[1]**2))
+        dist_line.append(min(numpy.sqrt((coord[0]-fault_line[:,0])**2 + (coord[1]-fault_line[:,1])**2)))
         
-    dist = numpy.array(dist) 
+    dist_line = numpy.array(dist_line)
+    # dist_point = numpy.array(dist_point)
     c = 2 #Static stress constant
-    static_stress = c* dist ** -2  #-3 (2 by Hardebeck)
-    stress_data = numpy.column_stack((stress_data, static_stress))
+    static_stress = c* dist_line ** -2
+    # ------
+    # dist = []
+    # for coord in coords:
+    #     dist.append(numpy.sqrt(coord[0]**2 + coord[1]**2))
+        
+    # dist = numpy.array(dist) 
+    # c = 2 #Static stress constant
+    # static_stress = c* dist ** -2  #-3 (2 by Hardebeck)
+    # stress_data = numpy.column_stack((stress_data, static_stress))
     
     if numpy.isinf(max(static_stress)):
         static_stress[numpy.where(numpy.isinf(static_stress) == True)] = numpy.sort(static_stress)[-2]
-#        stress_data = numpy.delete(stress_data, numpy.where(numpy.isinf(static_stress) == True),0)
-#        cell_bounds = numpy.delete(cell_bounds, numpy.where(numpy.isinf(static_stress) == True),0)
-        
+
     
+    stress_data = numpy.column_stack((stress_data, static_stress))
     model_grid = bounds_to_polygons(cell_bounds)
     filename = 'forecast_data/model_grid_ref'
     write_geojson_feature(model_grid,stress_data[:,4],filename)
@@ -103,11 +113,11 @@ circle_grid = create_circular_grid(radius_max, r_seg, a_seg, origin = org)
 
 
 if stress_MAS:
-        fname_square = 'forecast_data/square_grid_aggregated_stress_'+str(len(square_grid))+'_MAS.csv'
-        fname_circle = 'forecast_data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_MAS.csv'
+        fname_square = '../data/square_grid_aggregated_stress_'+str(len(square_grid))+'_MAS.csv'
+        fname_circle = '../data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_MAS.csv'
 else:
-        fname_square = 'forecast_data/square_grid_aggregated_stress_'+str(len(square_grid))+'_OOP.csv'
-        fname_circle = 'forecast_data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_OOP.csv'
+        fname_square = '../data/square_grid_aggregated_stress_'+str(len(square_grid))+'_OOP.csv'
+        fname_circle = '../data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_OOP.csv'
 
 
 if aggregation:
@@ -256,332 +266,33 @@ for i in range(num_sim):
     roc_ref_FNs_circ = numpy.row_stack((roc_ref_FNs_circ, roc_ref_circ))
     mcc_f1_ref_FNs_circ = numpy.row_stack((mcc_f1_ref_FNs_circ, mcc_f1_ref_circ))
         
-      
-# #------ Square ROC        
-# fig1, axs1 = plt.subplots()
-# fig1.set_size_inches(20, 15)
-# # axs1.hist([roc_oop_FNs_square[1:,0],roc_oop_FNs_square[1:,1], roc_oop_FNs_square[1:,2], roc_oop_FNs_square[1:,3],roc_oop_FNs_square[1:,4],
-# #            roc_oop_FNs_square[1:,5], roc_oop_FNs_square[1:,6]], 
-# #          label=['FN=0', 'FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'],
-# #          color=['b', 'g', 'r','y','m','c','k']) #, roc_oop_FNs[1:,7]]--- --
+ 
+# AUC Square grid
 
-# # axs1.hist([roc_ref_FNs_square[1:,0],roc_ref_FNs_square[1:,1], roc_ref_FNs_square[1:,2], roc_ref_FNs_square[1:,3],roc_ref_FNs_square[1:,4],
-# #            roc_ref_FNs_square[1:,5], roc_ref_FNs_square[1:,6]], 
-# #          label=['FN=0','FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'],
-# #          color=['b', 'g', 'r','y','m','c','k'], 
-# #          histtype='step', linewidth=2)    # ---,'FN=7'---,
-# axs1.hist(roc_oop_FNs_square[1:,0], label='Coulomb Model', color='r') #, roc_oop_FNs[1:,7]] 
-# axs1.hist(roc_ref_FNs_square[1:,0], label='Reference Model', color='g', linewidth=2)    # ---,'FN=7'---,histtype='step', 
-
-# axs1.legend()
-
-# axs1.hist([roc_oop_FNs_square[1:,1], roc_oop_FNs_square[1:,2], roc_oop_FNs_square[1:,3],roc_oop_FNs_square[1:,4],
-#            roc_oop_FNs_square[1:,5], roc_oop_FNs_square[1:,6]], 
-#          label=['FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'], alpha=0.3, color=[ 'r','r','r','r','r','r'], 
-#          linewidth=2, linestyle='--')    # ---,'FN=7'---,histtype='step', 
-
-
-
-# axs1.set_title('Square Grid - AUC value: Reference Model vs Coulomb Model')
-# axs1.set_xlabel('AUC value')
-
-# #------Circular ROC
-
-# fig2, axs2 = plt.subplots()
-# fig2.set_size_inches(20, 15)
-
-# # axs2.hist([roc_oop_FNs_circ[1:,0],roc_oop_FNs_circ[1:,1], roc_oop_FNs_circ[1:,2], roc_oop_FNs_circ[1:,3],roc_oop_FNs_circ[1:,4],
-# #            roc_oop_FNs_circ[1:,5], roc_oop_FNs_circ[1:,6]], 
-# #          label=['FN=0', 'FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'],
-# #          color=['b', 'g', 'r','y','m','c','k']) #, roc_oop_FNs[1:,7]]--- -- 
-# # axs2.legend()
-# # axs2.hist([roc_ref_FNs_circ[1:,0],roc_ref_FNs_circ[1:,1], roc_ref_FNs_circ[1:,2], roc_ref_FNs_circ[1:,3],roc_ref_FNs_circ[1:,4],
-# #            roc_ref_FNs_circ[1:,5], roc_ref_FNs_circ[1:,6]], 
-# #          label=['FN=0','FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'],
-# #          color=['b', 'g', 'r','y','m','c','k'], 
-# #          histtype='step', linewidth=2)    # ---,'FN=7'---,
-
-# axs2.hist(roc_oop_FNs_circ[1:,0], label='Coulomb Mobel', color='r') #, roc_oop_FNs[1:,7]]--- -- 
-# axs2.hist(roc_ref_FNs_circ[1:,0], label='Reference Model', color='g')    # ---,'FN=7'---,histtype='step', , linewidth=2 
-
-# axs2.legend()
-# axs2.hist([roc_oop_FNs_circ[1:,1], roc_oop_FNs_circ[1:,2], roc_oop_FNs_circ[1:,3],roc_oop_FNs_circ[1:,4],
-#            roc_oop_FNs_circ[1:,5], roc_oop_FNs_circ[1:,6]], 
-#          label=['FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'], alpha=0.3, color=[ 'r','r','r','r','r','r'], 
-#          linewidth=2, linestyle='--')    # ---,'FN=7'---,histtype='step', 
-
-# axs2.set_title('Circle Grid - AUC value: Reference Model vs Coulomb Model')
-# axs2.set_xlabel('AUC value')
-
-
-# #----------SQUARE MCC-F1
-# fig3, axs3 = plt.subplots()
-# fig3.set_size_inches(20, 15)
-
-# # axs3.hist([mcc_f1_oop_FNs_square[1:,0],mcc_f1_oop_FNs_square[1:,1], mcc_f1_oop_FNs_square[1:,2], mcc_f1_oop_FNs_square[1:,3],mcc_f1_oop_FNs_square[1:,4],
-# #            mcc_f1_oop_FNs_square[1:,5], mcc_f1_oop_FNs_square[1:,6]], 
-# #          label=['FN=0', 'FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'],
-# #          color=['b', 'g', 'r','y','m','c','k']) #, roc_oop_FNs[1:,7]]--- -- 
-# # axs3.legend()
-# # axs3.hist([mcc_f1_ref_FNs_square[1:,0],mcc_f1_ref_FNs_square[1:,1], mcc_f1_ref_FNs_square[1:,2], mcc_f1_ref_FNs_square[1:,3],mcc_f1_ref_FNs_square[1:,4],
-# #            mcc_f1_ref_FNs_square[1:,5], mcc_f1_ref_FNs_square[1:,6]], 
-# #          label=['FN=0','FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'],
-# #          color=['b', 'g', 'r','y','m','c','k'], 
-# #          histtype='step', linewidth=2)    # ---,'FN=7'---,
-
-# axs3.hist(mcc_f1_oop_FNs_square[1:,0], label='Coulomb Model', color='r') #, roc_oop_FNs[1:,7]]--- -- 
-# axs3.hist(mcc_f1_ref_FNs_square[1:,0], label='Reference Model', color='g')    #histtype='step', , linewidth=2 
-# axs3.legend()
-# axs3.hist([mcc_f1_oop_FNs_square[1:,1], mcc_f1_oop_FNs_square[1:,2], mcc_f1_oop_FNs_square[1:,3],mcc_f1_oop_FNs_square[1:,4],
-#             mcc_f1_oop_FNs_square[1:,5], mcc_f1_oop_FNs_square[1:,6]], 
-#           label=['FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'], alpha=0.3, color=['r', 'r', 'r','r','r','r'],
-#           linewidth=2, linestyle='--')    # ---,'FN=7'---,histtype='step', #, roc_oop_FNs[1:,7]]--- -- 
-
-
-# axs3.set_title('Square Grid - MCC-F1 value: Reference Model vs Coulomb Model')
-# axs3.set_xlabel('MCf1 value')
-        
-
-# #------
-# #---------- CIRCLE MCC-F1
-# fig4, axs4 = plt.subplots()
-# fig4.set_size_inches(20, 15)
-
-# # axs4.hist([mcc_f1_oop_FNs_circ[1:,0],mcc_f1_oop_FNs_circ[1:,1], mcc_f1_oop_FNs_circ[1:,2], mcc_f1_oop_FNs_circ[1:,3],mcc_f1_oop_FNs_circ[1:,4],
-# #            mcc_f1_oop_FNs_circ[1:,5], mcc_f1_oop_FNs_circ[1:,6]], 
-# #          label=['FN=0', 'FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'],
-# #          color=['b', 'g', 'r','y','m','c','k']) #, roc_oop_FNs[1:,7]]--- -- 
-# # axs4.legend()
-# # axs4.hist([mcc_f1_ref_FNs_circ[1:,0],mcc_f1_ref_FNs_circ[1:,1], mcc_f1_ref_FNs_circ[1:,2], mcc_f1_ref_FNs_circ[1:,3],mcc_f1_ref_FNs_circ[1:,4],
-# #            mcc_f1_ref_FNs_circ[1:,5], mcc_f1_ref_FNs_circ[1:,6]], 
-# #          label=['FN=0','FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'],
-# #          color=['b', 'g', 'r','y','m','c','k'], 
-# #          histtype='step', linewidth=2)    # ---,'FN=7'---,
-
-# axs4.hist(mcc_f1_oop_FNs_circ[1:,0], label='Coulomb Model', color='r') #, roc_oop_FNs[1:,7]]--- -- 
-# axs4.hist(mcc_f1_ref_FNs_circ[1:,0], label='Reference Model', color='g') #, histtype='step', linewidth=2   
-# axs4.legend()
-# axs4.hist([mcc_f1_oop_FNs_circ[1:,1], mcc_f1_oop_FNs_circ[1:,2], mcc_f1_oop_FNs_circ[1:,3],mcc_f1_oop_FNs_circ[1:,4],
-#             mcc_f1_oop_FNs_circ[1:,5], mcc_f1_oop_FNs_circ[1:,6]], 
-#           label=['FN=2', 'FN=3', 'FN=4','FN=5','FN=6','FN=7'], alpha=0.3, color=['r', 'r', 'r','r','r','r'], 
-#           linewidth=2, linestyle='--') #, roc_oop_FNs[1:,7]]--- -- 
-
-# axs4.set_title('Circle Grid - MCC-F1 value: Reference Model vs Coulomb Model')
-# axs4.set_xlabel('MCf1 value')
-
+axs1 = plot_performance_distribution(roc_oop_FNs_square, roc_ref_FNs_square)
+axs1.set_xlabel('AUC values', fontsize=14)
+axs1.set_ylabel('Distribution of of AUC values', fontsize=14)
 
 # AUC Circle Grid
-nbins=50
-
-fig5, axs5 = plt.subplots()
-fig5.set_size_inches(8, 6)
-
-axs5.plot(np.histogram(roc_oop_FNs_circ[1:,0], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_circ[1:,0], bins=nbins)[0]),
-          color='r')  #,label='Coulomb Model' 
-axs5.plot(np.histogram(roc_ref_FNs_circ[1:,0], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_circ[1:,0], bins=nbins)[0])),
-            color='b') #, label='Reference Model'
-axs5.legend(['Coulomb Model', 'Reference Model'], fontsize=14)
-
-axs5.plot(np.histogram(roc_oop_FNs_circ[1:,1], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_circ[1:,1], bins=nbins)[0]),
-          color='r',label='SE=1',alpha=0.8, linestyle='dotted') 
-# axs5.plot(np.histogram(roc_ref_FNs_circ[1:,1], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_circ[1:,1], bins=nbins)[0])),
-#           '--', color='g')
-
-
-axs5.plot(np.histogram(roc_oop_FNs_circ[1:,2], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_circ[1:,1], bins=nbins)[0]),
-          color='r',label='SE=2',alpha=0.8, linestyle='dotted') 
-# axs5.plot(np.histogram(roc_ref_FNs_circ[1:,1], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_circ[1:,1], bins=nbins)[0])),
-#           '--', color='g')
-
-axs5.plot(np.histogram(roc_oop_FNs_circ[1:,3], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_circ[1:,2], bins=nbins)[0]), 
-          color='r',label='SE=3', alpha=0.8, linestyle='dotted') 
-# axs5.plot(np.histogram(roc_ref_FNs_circ[1:,2], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_circ[1:,2], bins=nbins)[0])),
-#           '--', color='r')
-
-axs5.plot(np.histogram(roc_oop_FNs_circ[1:,4], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_circ[1:,3], bins=nbins)[0]),
-        color='r',label='SE=4', alpha=0.8, linestyle='dotted') 
-# axs5.plot(np.histogram(roc_ref_FNs_circ[1:,3], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_circ[1:,3], bins=nbins)[0])),
-#           '--', color='y')
-
-axs5.plot(np.histogram(roc_oop_FNs_circ[1:,5], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_circ[1:,4], bins=nbins)[0]),
-          color='r', label='SE=5', alpha=0.8, linestyle='dotted') 
-# axs5.plot(np.histogram(roc_ref_FNs_circ[1:,4], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_circ[1:,4], bins=nbins)[0])),
-#           '--', color='m')
-
-axs5.plot(np.histogram(roc_oop_FNs_circ[1:,6], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_circ[1:,5], bins=nbins)[0]),
-          color='r', label='SE=6', alpha=0.8, linestyle='dotted') 
-# axs5.plot(np.histogram(roc_ref_FNs_circ[1:,5], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_circ[1:,5], bins=nbins)[0])),
-#           '--', color='c')
-
-axs5.plot(np.histogram(roc_oop_FNs_circ[1:,7], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_circ[1:,6], bins=nbins)[0]),
-           color='r', label='SE=7', alpha=0.8, linestyle='dotted') 
-# axs5.plot(np.histogram(roc_ref_FNs_circ[1:,6], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_circ[1:,6], bins=nbins)[0])),
-#           '--', color='k')
-
-labelLines(axs5.get_lines(), zorder=5, align = True)
-#axs5.set_title('Circle Grid - AUC value: Reference Model vs Coulomb Model', fontsize=18)
-axs5.set_xlabel('AUC values', fontsize=14)
-axs5.set_ylabel('Distribution of of AUC values', fontsize=14)
-
-
-# AUC Square grid
-fig6, axs6 = plt.subplots()
-fig6.set_size_inches(8, 6)
-
-axs6.plot(np.histogram(roc_oop_FNs_square[1:,0], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_square[1:,0], bins=nbins)[0]),
-          color='r')  #,label='Coulomb Model' 
-axs6.plot(np.histogram(roc_ref_FNs_square[1:,0], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_square[1:,0], bins=nbins)[0])),
-            color='b')
-axs6.legend(['Coulomb Model', 'Reference Model'], fontsize=14)
-
-axs6.plot(np.histogram(roc_oop_FNs_square[1:,1], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_square[1:,1], bins=nbins)[0]),
-          color='r',label='SE=1', alpha=0.8, linestyle='dotted') 
-# axs6.plot(np.histogram(roc_ref_FNs_square[1:,1], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_square[1:,1], bins=nbins)[0])),
-#           '--', color='g')
-
-axs6.plot(np.histogram(roc_oop_FNs_square[1:,2], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_square[1:,1], bins=nbins)[0]),
-          color='r',label='SE=2', alpha=0.8, linestyle='dotted') 
-# axs6.plot(np.histogram(roc_ref_FNs_square[1:,1], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_square[1:,1], bins=nbins)[0])),
-#           '--', color='g')
-
-axs6.plot(np.histogram(roc_oop_FNs_square[1:,3], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_square[1:,2], bins=nbins)[0]), 
-          color='r',label='SE=3', alpha=0.8, linestyle='dotted') 
-# axs6.plot(np.histogram(roc_ref_FNs_square[1:,2], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_square[1:,2], bins=nbins)[0])),
-#           '--', color='r')
-
-axs6.plot(np.histogram(roc_oop_FNs_square[1:,4], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_square[1:,3], bins=nbins)[0]),
-        color='r',label='SE=4', alpha=0.8, linestyle='dotted') 
-# axs6.plot(np.histogram(roc_ref_FNs_square[1:,3], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_square[1:,3], bins=nbins)[0])),
-#           '--', color='y')
-
-axs6.plot(np.histogram(roc_oop_FNs_square[1:,5], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_square[1:,4], bins=nbins)[0]),
-          color='r', label='SE=5', alpha=0.8, linestyle='dotted') 
-# axs6.plot(np.histogram(roc_ref_FNs_square[1:,4], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_square[1:,4], bins=nbins)[0])),
-#           '--', color='m')
-
-axs6.plot(np.histogram(roc_oop_FNs_square[1:,6], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_square[1:,5], bins=nbins)[0]),
-          color='r', label='SE=6', alpha=0.8, linestyle='dotted') 
-# axs6.plot(np.histogram(roc_ref_FNs_square[1:,5], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_square[1:,5], bins=nbins)[0])),
-#           '--', color='c')
-
-axs6.plot(np.histogram(roc_oop_FNs_square[1:,7], bins=nbins)[1][:-1], np.cumsum(np.histogram(roc_oop_FNs_square[1:,6], bins=nbins)[0]),
-          color='r', label='SE=7', alpha=0.8, linestyle='dotted') 
-# axs6.plot(np.histogram(roc_ref_FNs_square[1:,6], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(roc_ref_FNs_square[1:,6], bins=nbins)[0])),
-#           '--', color='k')
-
-labelLines(axs6.get_lines(), zorder=5, align = True)
-#axs6.set_title('Square Grid - AUC value: Reference Model vs Coulomb Model', fontsize=18)
-axs6.set_xlabel('AUC values', fontsize=14)
-axs6.set_ylabel('Distribution of of AUC values', fontsize=14)
-
+# nbins=50
+axs2 = plot_performance_distribution(roc_oop_FNs_circ, roc_ref_FNs_circ)
+axs2.set_xlabel('AUC values', fontsize=14)
+axs2.set_ylabel('Distribution of of AUC values', fontsize=14)
 
 # Square Grid MCC-F1
-fig7, axs7 = plt.subplots()
-fig7.set_size_inches(8, 6)
-
-axs7.plot(np.histogram(mcc_f1_oop_FNs_square[1:,0], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_square[1:,0], bins=nbins)[0]),
-          color='r') #label='Coulomb Model' 
-axs7.plot(np.histogram(mcc_f1_ref_FNs_square[1:,0], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_square[1:,0], bins=nbins)[0])),
-          color='b') #label='Coulomb Model'
-axs7.legend(['Coulomb Model', 'Reference Model'], fontsize=14)
-
-
-axs7.plot(np.histogram(mcc_f1_oop_FNs_square[1:,1], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_square[1:,1], bins=nbins)[0]),
-          color='r',label='SE=1', alpha=0.8, linestyle='dotted') 
-# axs7.plot(np.histogram(mcc_f1_ref_FNs_square[1:,1], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_square[1:,1], bins=nbins)[0])),
-#           '--', color='g')
-
-axs7.plot(np.histogram(mcc_f1_oop_FNs_square[1:,2], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_square[1:,1], bins=nbins)[0]),
-          color='r',label='SE=2', alpha=0.8, linestyle='dotted') 
-# axs7.plot(np.histogram(mcc_f1_ref_FNs_square[1:,1], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_square[1:,1], bins=nbins)[0])),
-#           '--', color='g')
-
-axs7.plot(np.histogram(mcc_f1_oop_FNs_square[1:,3], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_square[1:,2], bins=nbins)[0]), 
-          color='r',label='SE=3', alpha=0.8, linestyle='dotted') 
-# axs7.plot(np.histogram(mcc_f1_ref_FNs_square[1:,2], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_square[1:,2], bins=nbins)[0])),
-#           '--', color='r')
-
-axs7.plot(np.histogram(mcc_f1_oop_FNs_square[1:,4], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_square[1:,3], bins=nbins)[0]),
-        color='r',label='SE=4', alpha=0.8, linestyle='dotted') 
-# axs7.plot(np.histogram(mcc_f1_ref_FNs_square[1:,3], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_square[1:,3], bins=nbins)[0])),
-#           '--', color='y')
-
-axs7.plot(np.histogram(mcc_f1_oop_FNs_square[1:,5], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_square[1:,4], bins=nbins)[0]),
-          color='r', label='SE=5', alpha=0.8, linestyle='dotted') 
-# axs7.plot(np.histogram(mcc_f1_ref_FNs_square[1:,4], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_square[1:,4], bins=nbins)[0])),
-#           '--', color='m')
-
-axs7.plot(np.histogram(mcc_f1_oop_FNs_square[1:,6], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_square[1:,5], bins=nbins)[0]),
-          color='r', label='SE=6', alpha=0.8, linestyle='dotted') 
-# axs7.plot(np.histogram(mcc_f1_ref_FNs_square[1:,5], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_square[1:,5], bins=nbins)[0])),
-#           '--', color='c')
-
-axs7.plot(np.histogram(mcc_f1_oop_FNs_square[1:,7], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_square[1:,6], bins=nbins)[0]),
-          color='r', label='SE=7', alpha=0.8, linestyle='dotted') 
-# axs7.plot(np.histogram(mcc_f1_ref_FNs_square[1:,6], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_square[1:,6], bins=nbins)[0])),
-#           '--', color='k')
-
-labelLines(axs7.get_lines(), zorder=5, align = True)
-#axs7.set_title('Square Grid - MCC-F1 value: Reference Model vs Coulomb Model', fontsize=18)
-axs7.set_xlabel('MCC-F1 metric', fontsize=14)
-axs7.set_ylabel('Distribution of MCC-F1 metric', fontsize=14)
-
+axs3 = plot_performance_distribution(mcc_f1_oop_FNs_square, mcc_f1_ref_FNs_square)
+axs3.set_xlabel('MCC-F1 metric', fontsize=14)
+axs3.set_ylabel('Distribution of MCC-F1 metric', fontsize=14)
 
 #Circle Grid --- MCC-F1
-fig8, axs8 = plt.subplots()
-fig8.set_size_inches(8, 6)
+axs4 = plot_performance_distribution(mcc_f1_oop_FNs_circ, mcc_f1_ref_FNs_circ)
+axs4.set_xlabel('MCC-F1 metric', fontsize=14)
+axs4.set_ylabel('Dstribution of MCC-F1 metric', fontsize=14)
 
-axs8.plot(np.histogram(mcc_f1_oop_FNs_circ[1:,0], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_circ[1:,0], bins=nbins)[0]),
-          color='r')  #,label='Coulomb Model'
-axs8.plot(np.histogram(mcc_f1_ref_FNs_circ[1:,0], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_circ[1:,0], bins=nbins)[0])),
-            color='b') #label='Reference Model'
-axs8.legend(['Coulomb Model', 'Reference Model'], fontsize=14)
-
-axs8.plot(np.histogram(mcc_f1_oop_FNs_circ[1:,1], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_circ[1:,1], bins=nbins)[0]),
-          color='r',label='SE=1', alpha=0.8, linestyle='dotted') 
-# axs8.plot(np.histogram(mcc_f1_ref_FNs_circ[1:,1], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_circ[1:,1], bins=nbins)[0])),
-#           '--', color='g')
-
-
-axs8.plot(np.histogram(mcc_f1_oop_FNs_circ[1:,2], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_circ[1:,1], bins=nbins)[0]),
-          color='r',label='SE=2', alpha=0.8, linestyle='dotted') 
-# axs8.plot(np.histogram(mcc_f1_ref_FNs_circ[1:,1], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_circ[1:,1], bins=nbins)[0])),
-#           '--', color='g')
-
-axs8.plot(np.histogram(mcc_f1_oop_FNs_circ[1:,3], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_circ[1:,2], bins=nbins)[0]), 
-          color='r',label='SE=3', alpha=0.8, linestyle='dotted') 
-# axs8.plot(np.histogram(mcc_f1_ref_FNs_circ[1:,2], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_circ[1:,2], bins=nbins)[0])),
-#           '--', color='r')
-
-axs8.plot(np.histogram(mcc_f1_oop_FNs_circ[1:,4], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_circ[1:,3], bins=nbins)[0]),
-        color='r',label='SE=4', alpha=0.8, linestyle='dotted') 
-# axs8.plot(np.histogram(mcc_f1_ref_FNs_circ[1:,3], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_circ[1:,3], bins=nbins)[0])),
-#           '--', color='y')
-
-axs8.plot(np.histogram(mcc_f1_oop_FNs_circ[1:,5], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_circ[1:,4], bins=nbins)[0]),
-          color='r', label='SE=5', alpha=0.8, linestyle='dotted') 
-# axs8.plot(np.histogram(mcc_f1_ref_FNs_circ[1:,4], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_circ[1:,4], bins=nbins)[0])),
-#           '--', color='m')
-
-axs8.plot(np.histogram(mcc_f1_oop_FNs_circ[1:,6], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_circ[1:,5], bins=nbins)[0]),
-          color='r', label='SE=6', alpha=0.8, linestyle='dotted') 
-# axs8.plot(np.histogram(mcc_f1_ref_FNs_circ[1:,5], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_circ[1:,5], bins=nbins)[0])),
-#           '--', color='c')
-
-axs8.plot(np.histogram(mcc_f1_oop_FNs_circ[1:,7], bins=nbins)[1][:-1], np.cumsum(np.histogram(mcc_f1_oop_FNs_circ[1:,6], bins=nbins)[0]),
-          color='r', label='SE=7', alpha=0.8, linestyle='dotted') 
-# axs8.plot(np.histogram(mcc_f1_ref_FNs_circ[1:,6], bins=nbins)[1][:-1],np.flip(np.cumsum(np.histogram(mcc_f1_ref_FNs_circ[1:,6], bins=nbins)[0])),
-#           '--', color='k')
-
-labelLines(axs8.get_lines(), zorder=5, align = True)
-#axs8.set_title('Circle Grid - MCC-F1 value: Reference Model vs Coulomb Model', fontsize=18)
-axs8.set_xlabel('MCC-F1 metric', fontsize=14)
-axs8.set_ylabel('Dstribution of MCC-F1 metric', fontsize=14)
-
-fig5.tight_layout()
-fig6.tight_layout()
-fig7.tight_layout()
-fig8.tight_layout()
+axs1.figure.tight_layout()
+axs2.figure.tight_layout()
+axs3.figure.tight_layout()
+axs4.figure.tight_layout()
 
 if stress_MAS:
     stress_name = 'MAS'
@@ -589,14 +300,9 @@ else:
     stress_name = 'OOP'
 
 if save_results:
-    # axs1.figure.savefig('results/Square_grid_ROC_'+stress_name+'_vs_'+model_type+'_hist.svg')
-    # axs2.figure.savefig('results/Circular_grid_ROC_'+stress_name+'_vs_'+model_type+'_hist.svg')
-    # axs3.figure.savefig('results/Square_grid_MCC-F1_'+stress_name+'_vs_'+model_type+'_hist.svg')
-    # axs4.figure.savefig('results/Circle_grid_MCC-F1_'+stress_name+'vs_'+model_type+'_hist.svg')
-    
-    axs5.figure.savefig('square_circle/Circular_grid_ROC_'+stress_name+'_:_'+model_type+'_cumulative.png', dpi=300)
-    axs6.figure.savefig('square_circle/Square_grid_ROC_'+stress_name+'_:_'+model_type+'_cumulative.png', dpi = 300)
-    axs7.figure.savefig('square_circle/Square_grid_MCC-F1_'+stress_name+'_:_'+model_type+'_cumulative.png', dpi=300)
-    axs8.figure.savefig('square_circle/Circle_grid_MCC-F1_'+stress_name+'_:_'+model_type+'_cumulative.png', dpi=300)
+    axs1.figure.savefig('../output/Square_grid_ROC_'+stress_name+'_:_'+model_type+'_cumulative.png', dpi = 300)
+    axs2.figure.savefig('../output/Circular_grid_ROC_'+stress_name+'_:_'+model_type+'_cumulative.png', dpi=300)
+    axs3.figure.savefig('../output/Square_grid_MCC-F1_'+stress_name+'_:_'+model_type+'_cumulative.png', dpi=300)
+    axs4.figure.savefig('../output/Circle_grid_MCC-F1_'+stress_name+'_:_'+model_type+'_cumulative.png', dpi=300)
     
     
