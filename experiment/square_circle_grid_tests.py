@@ -20,7 +20,7 @@ from utils import write_geojson_feature, generate_gridded_eqs, plot_grid_polygon
 
 introduce_FN = True
 aggregation = False
-save_results = False
+save_results = True
 stress_MAS= True   #True for MAS and False for OOP      
 model_type =  'coulomb' #'ref' 
 total_eqs = 400 #2485  # #
@@ -28,7 +28,7 @@ total_eqs = 400 #2485  # #
 #---------------Start of code
 if aggregation:
     #Running code from scratch and loading high resolution forecast and then aggregate it on circle and square. 
-    events = pandas.read_pickle('coulomb_forecast/Event_4.pkl')
+    events = pandas.read_pickle('../data/calculated_stress.pkl')
     stress_data = events.to_numpy()
     depth = 7 #5 if Event_3
     stress_data = stress_data[stress_data[:,2] == depth]
@@ -48,7 +48,7 @@ if aggregation:
     dh = numpy.diff(numpy.unique(stress_data[:,1]))[0]
     cell_bounds = numpy.column_stack((stress_data[:,:2], stress_data[:,:2]+dh))
     model_grid = bounds_to_polygons(cell_bounds)
-    filename = 'square_circle/model_grid_mas_rescaledCoords'
+    filename = '../data/model_grid_mas_rescaledCoords'
 #    write_geojson_feature(model_grid,stress_data[:,3],filename )
     ###--========-- Convert the forecast points into grid cells here .....
     
@@ -91,7 +91,7 @@ if aggregation:
     
     stress_data = numpy.column_stack((stress_data, static_stress))
     model_grid = bounds_to_polygons(cell_bounds)
-    filename = 'square_circle/model_grid_ref'
+    filename = '../data/model_grid_ref'
     write_geojson_feature(model_grid,stress_data[:,4],filename)
 
 
@@ -106,14 +106,14 @@ radius_max  = 100
 circle_grid = create_circular_grid(radius_max, r_seg, a_seg, origin = org)
 
 ax = plot_grid_polygon(circle_grid)
-ax.figure.savefig('square_circle/radial_grid.png', dpi=300)
+ax.figure.savefig('../output/radial_grid.png', dpi=300)
 
 if stress_MAS:
-        fname_square = 'forecast_data/square_grid_aggregated_stress_'+str(len(square_grid))+'_MAS.csv'
-        fname_circle = 'forecast_data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_MAS.csv'
+        fname_square = '../data/square_grid_aggregated_stress_'+str(len(square_grid))+'_MAS.csv'
+        fname_circle = '../data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_MAS.csv'
 else:
-        fname_square = 'forecast_data/square_grid_aggregated_stress_'+str(len(square_grid))+'_OOP.csv'
-        fname_circle = 'forecast_data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_OOP.csv'
+        fname_square = '../data/square_grid_aggregated_stress_'+str(len(square_grid))+'_OOP.csv'
+        fname_circle = '../data/circle_grid_aggregated_stress_'+str(len(circle_grid))+'_OOP.csv'
 
 if aggregation:
     # ---------Aggregate on Square grid
@@ -325,7 +325,7 @@ else:
     stress_name = 'OOP'
     
 if save_results:
-    axs1.figure.savefig('square_circle/Square_grid_ROC_'+stress_name+'_:_'+model_type+'.png', dpi=300) #Fig2a
-    axs2.figure.savefig('square_circle/Square_grid_MCC-F1_'+stress_name+'_:_'+model_type+'.png',dpi=300) #Fig2c
-    axs3.figure.savefig('square_circle/Circular_grid_ROC_'+stress_name+'_:_'+model_type+'.png', dpi=300) #Fig3a
-    axs4.figure.savefig('square_circle/Circular_grid_MCC-F1_'+stress_name+'_:_'+model_type+'.png', dpi=300) #Fig3c
+    axs1.figure.savefig('../output/Fig2a_Square_grid_ROC_'+stress_name+'_:_'+model_type+'.png', dpi=300) #Fig2a
+    axs2.figure.savefig('../output/Fig2c_Square_grid_MCC-F1_'+stress_name+'_:_'+model_type+'.png',dpi=300) #Fig2c
+    axs3.figure.savefig('../output/Fig3a_Circular_grid_ROC_'+stress_name+'_:_'+model_type+'.png', dpi=300) #Fig3a
+    axs4.figure.savefig('../output/Fig3c_Circular_grid_MCC-F1_'+stress_name+'_:_'+model_type+'.png', dpi=300) #Fig3c
