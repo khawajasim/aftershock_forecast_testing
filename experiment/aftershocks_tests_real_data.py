@@ -165,17 +165,26 @@ def evaluate_real_aftershock_model(earthquake_name):
     grid_label = ['L12', 'L13', 'L14','Multi_res'] #' 
     fig3, axs3 = plt.subplots()
     fig3.set_size_inches(8, 6)
-    
+    print('AUC CFS :', auc_cfs)
     axs3.plot(grid_label, auc_cfs, color ='red', label='$\Delta CFS$ : AUC')
     axs3.plot(grid_label, auc_ref, color='blue', label='R : AUC')
     
+    print('MCC-F1 :', mcc_f1_cfs)
     axs3.plot(grid_label, mcc_f1_cfs, '--', color ='red', label='$\Delta CFS$ : MCC-F$_1$')
     axs3.plot(grid_label, mcc_f1_ref, '--', color ='blue', label='R : MCC-F$_1$')
     
+    if config.stress_MAS:
+        stress_name = 'MAS'
+    else:
+        stress_name = 'OOP'
     axs3.legend(fontsize=14)
     axs3.figure.tight_layout()
-    axs3.figure.savefig('output/'+eq_name+'_'+config.model+'_performance.png', dpi=300)
-    # axs3.figure.savefig(folder+eq_name+'_'+model+'_performance.svg')
+    axs3.figure.savefig('output/'+eq_name+'_'+stress_name+'_performance.png', dpi=300)
+    
+    
+    numpy.savetxt('output/'+eq_name+'_'+stress_name+'_AUC_CFS.csv',auc_cfs, delimiter=',')
+    numpy.savetxt('output/'+eq_name+'_'+stress_name+'_mccf1_CFS.csv',mcc_f1_cfs, delimiter=',')
+    # axs3.figure.savefig(folder+eq_name+'_'+stress_name+'_performance.svg')
 
 
 def main():
