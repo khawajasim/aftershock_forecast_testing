@@ -28,7 +28,7 @@ model_for_sim =  'coulomb' #'ref'
 
 #6 - Number of earthquakes in the simulated catalogs to run the analysis.
 #Note: It can be any number for analysis, whether 200,300,.....2000.
-total_eqs = 600 #2485  # #
+total_eqs = 700 #2485  # #
 
 #7 - Number of simulations to generate 
 num_sim = 100
