@@ -35,7 +35,8 @@ python run_experiment.py
 ```
 Usage:
 ```
-python run_experiment ```
+python run_experiment 
+```
 
 The resulting figures will be stored in the folder "output".
 For details of different parameters, please see the file experiment/config.py. You can change those parameters to analyze the results.
