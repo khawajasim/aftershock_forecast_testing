@@ -19,7 +19,7 @@ save_results = True
 
 #4 - Set to "True", if want to run simulation based on \DltaCFS along master fault.
 #    Set to "False", if want to run simulation based on \DeltaCFS along optimally oriented fault.
-stress_MAS= True   #True for MAS and False for OOP      
+stress_MAS= False   #True for MAS and False for OOP      
 
 #5 - Model type to generate simulated catalogs.
 #    Set 'model_type' = 'coulomb', to use Coulomb model for catalog generation.
@@ -31,8 +31,8 @@ model_for_sim =  'coulomb' #'ref'
 total_eqs = 400 #2485  # #
 
 #7 - Number of simulations to generate 
-num_sim = 3
+num_sim = 100
 
 
 #8 - Grids to run the experiment for Chichi and Landers
-grids = ['_single_res_grid_zoom=12','_single_res_grid_zoom=13']#,'_single_res_grid_zoom=14','_multi_res_grid'] #
+grids = ['_single_res_grid_zoom=12','_single_res_grid_zoom=13','_single_res_grid_zoom=14','_multi_res_grid'] #

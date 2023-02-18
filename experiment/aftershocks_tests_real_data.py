@@ -31,7 +31,7 @@ def evaluate_real_aftershock_model(earthquake_name):
     else:
         print('select the right earthquake')
     
-    model = 'OOP' #'MAS' # #
+    # model = 'OOP' #'MAS' # #
     auc_cfs = []
     auc_ref = []
     mcc_f1_cfs = []
@@ -85,9 +85,9 @@ def evaluate_real_aftershock_model(earthquake_name):
         #3- Aggregate them onto suitable grids (square, circular, quadtree) and evaluate. 
         
         # stress_loc = stress[:,:2]
-        if model== 'MAS':
+        if config.stress_MAS:
             stress_data = stress[:,6]
-        elif model=='OOP':
+        else:
             stress_data = stress[:,7]
             
         # ---its already aggregated now. So we dont need it anymore. 
@@ -162,7 +162,7 @@ def evaluate_real_aftershock_model(earthquake_name):
         mcc_f1_ref.append(mcc_f1)
 
     
-    grid_label = ['L12', 'L13']#, 'L14','Multi_res'] #' 
+    grid_label = ['L12', 'L13', 'L14','Multi_res'] #' 
     fig3, axs3 = plt.subplots()
     fig3.set_size_inches(8, 6)
     
