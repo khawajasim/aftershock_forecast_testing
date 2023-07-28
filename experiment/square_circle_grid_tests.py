@@ -149,7 +149,7 @@ def main():
     fig2, axs2 = plt.subplots()
     fig2.set_size_inches(8, 6)
     #axs2.set_title('MCC-F1: Square Grid')
-    axs2.set_xlabel('F1', fontsize=14)
+    axs2.set_xlabel('F$_1$', fontsize=14)
     axs2.set_ylabel('MCC', fontsize=14)
     
     fig3, axs3 = plt.subplots()
@@ -205,7 +205,7 @@ def main():
             mcc_f1 = numpy.round(calc_mccf1_metric(f1,mcc, min_dist=True),3)
     
             if fn ==0:
-                axs2.plot(f1,mcc, label = 'Coulomb Model MCC-F1='+str(mcc_f1), color='red', alpha=1)
+                axs2.plot(f1,mcc, label = 'Coulomb Model MCC-F$_1$='+str(mcc_f1), color='red', alpha=1)
             elif fn == FNs[-1]:
                 axs2.plot(f1, mcc, color='red', alpha=0.20) #label = 'Coulomb Model MCC-F1='+str(mcc_f1),
             else:
@@ -225,7 +225,7 @@ def main():
             mcc_f1 = numpy.round(calc_mccf1_metric(f1,mcc, min_dist=True),3)
             
             if fn == 0:
-                axs2.plot(f1, mcc, label = 'Reference Model MCC-F1='+str(mcc_f1), color='blue', alpha=1)
+                axs2.plot(f1, mcc, label = 'Reference Model MCC-F$_1$='+str(mcc_f1), color='blue', alpha=1)
             # elif fn == FNs[-1]:
             #     axs2.plot(f1, mcc, label = 'Reference Model MCC-F1='+str(mcc_f1), color='blue', alpha=0.20)
             # else:
@@ -260,7 +260,7 @@ def main():
             mcc_f1 = numpy.round(calc_mccf1_metric(f1,mcc, min_dist=True),3)
     
             if fn ==0:
-                axs4.plot(f1,mcc, label = 'Coulomb Model MCC-F1 = '+str(mcc_f1), color='red', alpha=1)
+                axs4.plot(f1,mcc, label = 'Coulomb Model MCC-F$_1$ = '+str(mcc_f1), color='red', alpha=1)
             elif fn == FNs[-1]:
                 axs4.plot(f1, mcc,  color='red', alpha=0.20) #label = 'Coulomb Model MCC-F1 = '+str(mcc_f1),
             else:
@@ -284,7 +284,7 @@ def main():
             mcc_f1 = numpy.round(calc_mccf1_metric(f1,mcc, min_dist=True),3)
             
             if fn == 0:
-                axs4.plot(f1, mcc, label = 'Reference Model MCC-F1 = '+str(mcc_f1), color='blue', alpha=1)
+                axs4.plot(f1, mcc, label = 'Reference Model MCC-F$_1$ = '+str(mcc_f1), color='blue', alpha=1)
             # elif fn == FNs[-1]:
             #     axs4.plot(f1, mcc, label = 'Reference Model MCC-F1 = '+str(mcc_f1), color='blue', alpha=0.20)
             # else:

@@ -196,7 +196,7 @@ def main():
     #roc_percentile_diff = numpy.array(roc_percentile_diff)
     axs1.plot(roc_perf[:,0]/len(stress)*100, roc_perf[:,1], label='ROC (SE=0)', color='black')
     #mccf1_percentile_diff = numpy.array(mccf1_percentile_diff)
-    axs1.plot(mccf1_perf[:,0]/len(stress)*100, mccf1_perf[:,1], label='MCC-F1 (SE=0)', color='blue')
+    axs1.plot(mccf1_perf[:,0]/len(stress)*100, mccf1_perf[:,1], label='MCC-F$_1$ (SE=0)', color='blue')
     
     fn=10
     roc_perf = numpy.array(data_roc[fn])
@@ -204,7 +204,7 @@ def main():
     
     axs1.plot(roc_perf[:,0]/len(stress)*100, roc_perf[:,1], label='ROC (SE=10)', color='black', linestyle='dotted')
     #mccf1_percentile_diff = numpy.array(mccf1_percentile_diff)
-    axs1.plot(mccf1_perf[:,0]/len(stress)*100, mccf1_perf[:,1], label='MCC-F1 (SE=10)', color='blue', linestyle='dotted')
+    axs1.plot(mccf1_perf[:,0]/len(stress)*100, mccf1_perf[:,1], label='MCC-F$_1$ (SE=10)', color='blue', linestyle='dotted')
     axs1.axhline(y=0, color ='red', linestyle='--')
     
     

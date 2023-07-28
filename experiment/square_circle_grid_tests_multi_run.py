@@ -256,23 +256,23 @@ def main():
     
     axs1 = plot_performance_distribution(roc_oop_FNs_square, roc_ref_FNs_square)
     axs1.set_xlabel('AUC values', fontsize=14)
-    axs1.set_ylabel('Distribution of of AUC values', fontsize=14)
+    axs1.set_ylabel('Distribution of AUC values', fontsize=14)
     
     # AUC Circle Grid
     # nbins=50
     axs2 = plot_performance_distribution(roc_oop_FNs_circ, roc_ref_FNs_circ)
     axs2.set_xlabel('AUC values', fontsize=14)
-    axs2.set_ylabel('Distribution of of AUC values', fontsize=14)
+    axs2.set_ylabel('Distribution of AUC values', fontsize=14)
     
     # Square Grid MCC-F1
     axs3 = plot_performance_distribution(mcc_f1_oop_FNs_square, mcc_f1_ref_FNs_square)
-    axs3.set_xlabel('MCC-F1 metric', fontsize=14)
-    axs3.set_ylabel('Distribution of MCC-F1 metric', fontsize=14)
+    axs3.set_xlabel('MCC-F$_1$ metric', fontsize=14)
+    axs3.set_ylabel('Distribution of MCC-F$_1$ metric', fontsize=14)
     
     #Circle Grid --- MCC-F1
     axs4 = plot_performance_distribution(mcc_f1_oop_FNs_circ, mcc_f1_ref_FNs_circ)
     axs4.set_xlabel('MCC-F1 metric', fontsize=14)
-    axs4.set_ylabel('Dstribution of MCC-F1 metric', fontsize=14)
+    axs4.set_ylabel('Dstribution of MCC-F$_1$ metric', fontsize=14)
     
     axs1.figure.tight_layout()
     axs2.figure.tight_layout()
