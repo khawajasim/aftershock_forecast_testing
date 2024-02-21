@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>experiment.grid_operations &mdash; aftershock_forecast_testing_v1 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            aftershock_forecast_testing_v1
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">aftershock_forecast_testing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">aftershock_forecast_testing_v1</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">experiment.grid_operations</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for experiment.grid_operations</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Fri Sep 23 15:20:42 2022</span>
+
+<span class="sd">@author: khawaja</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># import json</span>
+<span class="c1"># import matplotlib.pyplot as plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">box</span> <span class="c1">#GeometryCollection, LineString, mapping, </span>
+<span class="c1"># from shapely.ops import cascaded_union, polygonize, unary_union</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<div class="viewcode-block" id="get_circumference_points"><a class="viewcode-back" href="../../experiment.html#experiment.grid_operations.get_circumference_points">[docs]</a><span class="k">def</span> <span class="nf">get_circumference_points</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">number_of_points</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the radius of circle, and provive the number of points along circumference. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">radians_between_each_point</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">number_of_points</span>
+    <span class="n">list_of_points</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">number_of_points</span><span class="p">):</span>
+        <span class="n">list_of_points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">radius</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="n">radians_between_each_point</span><span class="p">),</span><span class="n">radius</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="n">radians_between_each_point</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="n">list_of_points</span></div>
+
+
+<span class="c1"># def write_geojson(grid_polygons,filename):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This functions takes in Shape.Geometery type list of shapes and writes</span>
+<span class="c1">#     them in the format of geojason file. The geojason file will be then used to plot in QGIS</span>
+
+<span class="c1">#     Parameters</span>
+<span class="c1">#     ----------</span>
+<span class="c1">#     shape_list : List of Shapely.geometery</span>
+<span class="c1">#         Bounding boxes or points or lines that are used for display in QGIS</span>
+<span class="c1">#     filename : string</span>
+<span class="c1">#         Intended name of GEOJSON file</span>
+
+<span class="c1">#     Returns </span>
+<span class="c1">#     -------</span>
+<span class="c1">#     GEOJSON file</span>
+
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     shape_list=[] #Converting to the proper format. </span>
+<span class="c1">#     for poly in grid_polygons:</span>
+<span class="c1">#         shape_list.append(mapping(poly))</span>
+        
+        
+<span class="c1">#     geo_shape = {&quot;type&quot;:&quot;FeatureCollection&quot;,</span>
+<span class="c1">#                   &quot;features&quot;:[]}</span>
+<span class="c1">#     for bb in shape_list:</span>
+<span class="c1"># #        print(bb.centroid)</span>
+<span class="c1">#         feature = {&quot;type&quot;:&quot;Feature&quot;,</span>
+<span class="c1">#               &quot;properties&quot;:{&quot;some_parameter&quot;: &quot;XYZ&quot;,</span>
+<span class="c1">#                             },</span>
+<span class="c1">#                   &quot;geometry&quot;:bb};</span>
+<span class="c1">#         geo_shape[&#39;features&#39;].append(feature)</span>
+
+<span class="c1"># #   poly[&#39;features&#39;][0][&#39;geometry&#39;][&#39;coordinates&#39;]</span>
+
+<span class="c1">#     with open(filename+&#39;.geojson&#39;, &#39;a&#39;) as f:</span>
+<span class="c1">#         json.dump(geo_shape, f)</span>
+    
+<span class="c1">#     return geo_shape</span>
+
+<span class="c1"># def write_geojson_feature(grid_polygons,feature, filename):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Write coordsniates along with feature</span>
+<span class="c1">#     This functions takes in Shape.Geometery type list of shapes (polygon or point) and writes</span>
+<span class="c1">#     them in the format of geojason file. The geojason file will be then used to plot in QGIS</span>
+
+<span class="c1">#     Parameters</span>
+<span class="c1">#     ----------</span>
+<span class="c1">#     shape_list : List of Shapely.geometery</span>
+<span class="c1">#         Bounding boxes or points or lines that are used for display in QGIS</span>
+<span class="c1">#     filename : string</span>
+<span class="c1">#         Intended name of GEOJSON file</span>
+
+<span class="c1">#     Returns </span>
+<span class="c1">#     -------</span>
+<span class="c1">#     GEOJSON file</span>
+
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     shape_list=[] #Converting to the proper format. </span>
+<span class="c1">#     for poly in grid_polygons:</span>
+<span class="c1">#         shape_list.append(mapping(poly))</span>
+        
+        
+<span class="c1">#     geo_shape = {&quot;type&quot;:&quot;FeatureCollection&quot;,</span>
+<span class="c1">#                   &quot;features&quot;:[]}</span>
+<span class="c1">#     for bb, ff in zip(shape_list, feature):</span>
+<span class="c1">#         feature = {&quot;type&quot;:&quot;Feature&quot;,</span>
+<span class="c1">#               &quot;properties&quot;:{&quot;feature1&quot;: ff,</span>
+<span class="c1">#                             },</span>
+<span class="c1">#                   &quot;geometry&quot;:bb};</span>
+<span class="c1">#         geo_shape[&#39;features&#39;].append(feature)</span>
+
+<span class="c1"># #   poly[&#39;features&#39;][0][&#39;geometry&#39;][&#39;coordinates&#39;]</span>
+
+<span class="c1">#     with open(filename+&#39;.geojson&#39;, &#39;w&#39;) as f:</span>
+<span class="c1">#         json.dump(geo_shape, f)</span>
+    
+<span class="c1">#     return geo_shape</span>
+
+
+
+<div class="viewcode-block" id="create_full_arc"><a class="viewcode-back" href="../../experiment.html#experiment.grid_operations.create_full_arc">[docs]</a><span class="k">def</span> <span class="nf">create_full_arc</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span><span class="n">start_angle</span><span class="p">,</span> <span class="n">end_angle</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">numsegments</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a polygon circular arc for radius, between start_angle (degrees) to end_angle (degrees).</span>
+<span class="sd">    Inputs:</span>
+<span class="sd">        radius of circle</span>
+<span class="sd">        start_angle, end_angle: in degrees</span>
+<span class="sd">        origin: tuple the center of cirlce. Default (0,0)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start_angle</span><span class="p">,</span> <span class="n">end_angle</span><span class="p">,</span> <span class="n">numsegments</span><span class="p">))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="c1">#I think There is a potential round off error here. </span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+<span class="c1">#    xx = np.append(np.append(origin[0],x),origin[0])</span>
+<span class="c1">#    yy =  np.append(np.append(origin[1],y),origin[1])</span>
+<span class="c1">#    arc = Polygon(np.column_stack([xx, yy]))</span>
+    <span class="n">arc</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">arc</span></div>
+
+
+
+<div class="viewcode-block" id="create_circular_grid"><a class="viewcode-back" href="../../experiment.html#experiment.grid_operations.create_circular_grid">[docs]</a><span class="k">def</span> <span class="nf">create_circular_grid</span><span class="p">(</span><span class="n">max_radius</span><span class="p">,</span> <span class="n">r_segments</span><span class="p">,</span> <span class="n">a_segments</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get circular grid, that divides &quot;max_radius&quot; into &quot;r_segments&quot; concentric circles and different </span>
+<span class="sd">    angles.</span>
+<span class="sd">    Inputs: </span>
+<span class="sd">        max_radius: Maximum radius of circular grid</span>
+<span class="sd">        r_segments: Number of concentric circles, or the number of segments in circle.</span>
+<span class="sd">        a_segments: The number circular segments. Or segments in the angle.</span>
+<span class="sd">        origin = the center point of the circular grid</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of polygon for each circular cell. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">max_radius</span><span class="p">,</span> <span class="n">r_segments</span><span class="o">+</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span> <span class="c1">#,4,6,8,10]</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">360</span><span class="p">,</span> <span class="n">a_segments</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1">#angles = [0,90]</span>
+    <span class="n">polygon_list</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># list of al the arcs.</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+<span class="c1">#        print(&#39;Arc between Angle :&#39;, angles[i],&#39; and &#39;, angles[i+1])</span>
+    
+        <span class="c1">#Frst take one angle segment and find arcs for all the radius.</span>
+        <span class="c1">#the grid cell at every radius is the difference between this segment and all smaller radius segments</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">radius</span><span class="p">):</span>
+<span class="c1">#            print(&#39;The radius of Arc : &#39;,r)</span>
+            <span class="n">arc</span> <span class="o">=</span> <span class="n">create_full_arc</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">angles</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">angles</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">radius</span><span class="p">):</span>
+                <span class="n">coords</span> <span class="o">=</span> <span class="n">arc</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]</span>
+                <span class="n">coords</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">polygon_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Polygon</span><span class="p">([</span><span class="n">origin</span><span class="p">]</span><span class="o">+</span><span class="n">coords</span><span class="p">))</span>
+                <span class="n">arc_tmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">arc</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span> <span class="c1">#elif r == max(radius)</span>
+    <span class="c1">#            diff = arc.difference(arc_tmp)</span>
+    <span class="c1">#            polygon_list.append(diff)</span>
+                <span class="n">coords1</span> <span class="o">=</span> <span class="n">arc_tmp</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]</span>
+                <span class="n">coords2</span> <span class="o">=</span> <span class="n">arc</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">coords</span><span class="p">[:]</span>
+                <span class="n">coords1</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">coords2</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">coords2</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+                <span class="n">polygon_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">coords1</span><span class="o">+</span><span class="n">coords2</span><span class="p">))</span>
+
+                <span class="n">arc_tmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">arc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">polygon_list</span>        </div>
+
+
+
+<div class="viewcode-block" id="bounds_to_polygons"><a class="viewcode-back" href="../../experiment.html#experiment.grid_operations.bounds_to_polygons">[docs]</a><span class="k">def</span> <span class="nf">bounds_to_polygons</span><span class="p">(</span><span class="n">bounding_coords</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    taking corner points and convert them to polygons boxes</span>
+<span class="sd">    Inputs:</span>
+<span class="sd">        List or Arrany of points: nx4.</span>
+<span class="sd">        [bottom_left_x, bottom_left_y, top_right_x, top_right_y]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bounding_polygons</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">bb</span> <span class="ow">in</span> <span class="n">bounding_coords</span><span class="p">:</span>
+        <span class="n">bounding_polygons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">box</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">3</span><span class="p">])))</span>
+    <span class="k">return</span> <span class="n">bounding_polygons</span></div>
+
+
+<div class="viewcode-block" id="create_square_grid_bounds"><a class="viewcode-back" href="../../experiment.html#experiment.grid_operations.create_square_grid_bounds">[docs]</a><span class="k">def</span> <span class="nf">create_square_grid_bounds</span><span class="p">(</span><span class="n">bottom_left_corner</span><span class="p">,</span> <span class="n">top_right_corner</span><span class="p">,</span> <span class="n">ncells_1D</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a square grid with starting from bottom_left_corner to top_right_corner with dh_1D cells in one side</span>
+<span class="sd">    dh_1D = sqrt(Total_cells_in_grid)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">bottom_left_corner</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">top_right_corner</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ncells_1D</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">bottom_left_corner</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">top_right_corner</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ncells_1D</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="n">bottom_left_coords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">yy</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">bottom_left_coords</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">yy</span><span class="p">[</span><span class="n">j</span><span class="p">]])</span>
+    
+    <span class="n">bottom_left_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bottom_left_coords</span><span class="p">)</span>
+    <span class="n">dh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">xx</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">top_right_coords</span> <span class="o">=</span> <span class="n">bottom_left_coords</span> <span class="o">+</span> <span class="n">dh</span>
+    
+    <span class="n">bounding_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">bottom_left_coords</span><span class="p">,</span> <span class="n">top_right_coords</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">bounding_coords</span></div>
+    
+
+<div class="viewcode-block" id="forecast_aggregation_mean"><a class="viewcode-back" href="../../experiment.html#experiment.grid_operations.forecast_aggregation_mean">[docs]</a><span class="k">def</span> <span class="nf">forecast_aggregation_mean</span><span class="p">(</span><span class="n">test_bounds</span><span class="p">,</span> <span class="n">model_loc</span><span class="p">,</span> <span class="n">stress_value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Forecast mapping from &quot;model_locations&quot; to the &quot;test_bounds&quot;</span>
+<span class="sd">    Take the mean of all the points inside the &quot;test_bounds&quot;, and then multiply by the area. </span>
+<span class="sd">    Input:</span>
+<span class="sd">        test_bounds: A list of polygons of test grid</span>
+<span class="sd">        model_loc: A list of polygons of forecast grid</span>
+<span class="sd">        stress_values: forecast</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="c1">#    model_bounds = [[gg.bounds[0], gg.bounds[1]] for gg in model_grid]</span>
+<span class="c1">#    model_bounds = numpy.array(model_bounds)</span>
+    <span class="n">test_stress</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#numpy.zeros(len(test_bounds))</span>
+    
+    <span class="k">for</span> <span class="n">bounds</span> <span class="ow">in</span> <span class="n">test_bounds</span><span class="p">:</span>
+        <span class="n">inside_locs</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">model_loc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">model_loc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                            <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">model_loc</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">model_loc</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+        
+<span class="c1">#        len(model_loc[inside_locs])</span>
+        <span class="n">cell_area</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">((</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">bounds</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+        <span class="n">test_stress</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">stress_value</span><span class="p">[</span><span class="n">inside_locs</span><span class="p">])</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">stress_value</span><span class="p">[</span><span class="n">inside_locs</span><span class="p">])</span> <span class="o">*</span> <span class="n">cell_area</span><span class="p">)</span>
+     
+    <span class="k">return</span> <span class="n">test_stress</span></div>
+
+
+<div class="viewcode-block" id="forecast_aggregation"><a class="viewcode-back" href="../../experiment.html#experiment.grid_operations.forecast_aggregation">[docs]</a><span class="k">def</span> <span class="nf">forecast_aggregation</span><span class="p">(</span><span class="n">test_grid</span><span class="p">,</span> <span class="n">model_grid</span><span class="p">,</span> <span class="n">stress_value</span><span class="p">,</span> <span class="n">by_addition</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Forecast mapping from one grid &quot;model_grid&quot; to the &quot;test_grid&quot;</span>
+<span class="sd">    Input:</span>
+<span class="sd">        test_grid: A list of polygons of test grid</span>
+<span class="sd">        model_grid: A list of polygons of forecast grid</span>
+<span class="sd">        stress: forecast</span>
+<span class="sd">    Process: If by_addition=True, then add the fraction of stress shared by the common areas.</span>
+<span class="sd">            If by_addition=False, then average stress of all the points touching a cell. </span>
+<span class="sd">            (Since, the stress is computed for the points, so I find the latter better for aggregation.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">test_stress</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_grid</span><span class="p">))</span>
+<span class="c1">#    points_taken = 0</span>
+    <span class="k">if</span> <span class="n">by_addition</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_grid</span><span class="p">):</span>
+            <span class="c1"># print(&#39;Cell: &#39;,i)</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">p2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model_grid</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">p1</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">p2</span><span class="p">):</span>
+                   <span class="n">test_stress</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_stress</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span> <span class="p">((</span><span class="n">p1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span><span class="o">.</span><span class="n">area</span> <span class="o">/</span><span class="n">p2</span><span class="o">.</span><span class="n">area</span><span class="p">)</span> <span class="o">*</span> <span class="n">stress_value</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">model_points</span> <span class="o">=</span> <span class="p">[[</span><span class="n">bb</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bb</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">bb</span> <span class="ow">in</span> <span class="n">model_grid</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_grid</span><span class="p">):</span>
+<span class="c1">#            print(&#39;Cell: &#39;,i)</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">p2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model_points</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">p1</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="n">p2</span><span class="p">)):</span>
+                   <span class="n">l</span><span class="o">=</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span> 
+                   <span class="n">test_stress</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_stress</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span> <span class="n">stress_value</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="c1">#((p1.intersection(p2).area /p2.area) * stress[j] )</span>
+            <span class="n">test_stress</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_stress</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="n">l</span> <span class="o">*</span> <span class="n">p1</span><span class="o">.</span><span class="n">area</span>
+            <span class="c1"># print(&#39;Cell &#39;,i, &#39; took &#39;,l, &#39; Points&#39;)</span>
+<span class="c1">#            points_taken = points_taken+l</span>
+        
+          
+<span class="c1">#    for n,pn in enumerate(test_grid):  #Normalizing the aggregated forecasts</span>
+<span class="c1">#        test_stress[n] = test_stress[n] / pn.area</span>
+               
+    <span class="k">return</span> <span class="n">test_stress</span></div>
+
+<div class="viewcode-block" id="forecast_aggregation_bounds"><a class="viewcode-back" href="../../experiment.html#experiment.grid_operations.forecast_aggregation_bounds">[docs]</a><span class="k">def</span> <span class="nf">forecast_aggregation_bounds</span><span class="p">(</span><span class="n">grid_bounds</span><span class="p">,</span> <span class="n">stress_loc</span><span class="p">,</span><span class="n">stress_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Aggregating the stress into the grid_bounds</span>
+<span class="sd">    Inputs:</span>
+<span class="sd">        grid_bounds[lon1,lat1, lon2,lat2] nx4</span>
+<span class="sd">        stress_loc [lon,lat] nx2</span>
+<span class="sd">        stress_data nx1: MAS or OOP. </span>
+<span class="sd">        </span>
+<span class="sd">    Outputs:</span>
+<span class="sd">        Aggregated stress: nx1</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">aggregated_forecast</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">grid_bounds</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grid_bounds</span><span class="p">):</span>
+        <span class="n">inside_points</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">stress_loc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">stress_loc</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]),</span>
+                                <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">stress_loc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">bb</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">stress_loc</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">bb</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+        <span class="n">aggregated_forecast</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">stress_data</span><span class="p">[</span><span class="n">inside_points</span><span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">aggregated_forecast</span>    </div>
+
+<div class="viewcode-block" id="locate_eq_to_grid"><a class="viewcode-back" href="../../experiment.html#experiment.grid_operations.locate_eq_to_grid">[docs]</a><span class="k">def</span> <span class="nf">locate_eq_to_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">eq_loc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Map xy location of earthquakes onto a grid. Convert catalog into gridded catalog</span>
+<span class="sd">    Inputs:</span>
+<span class="sd">        grid: List of shapely.polygon of grid cells</span>
+<span class="sd">        eq_loc: List of xy location of earthqyuakes</span>
+<span class="sd">    Outputs:</span>
+<span class="sd">        6</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gridded_cat</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">xy</span> <span class="ow">in</span> <span class="n">eq_loc</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">poly</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grid</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">poly</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+                <span class="n">gridded_cat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridded_cat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+                <span class="k">break</span>
+    <span class="k">return</span> <span class="n">gridded_cat</span>    </div>
+
+<div class="viewcode-block" id="locate_eq_to_grid3D"><a class="viewcode-back" href="../../experiment.html#experiment.grid_operations.locate_eq_to_grid3D">[docs]</a><span class="k">def</span> <span class="nf">locate_eq_to_grid3D</span><span class="p">(</span><span class="n">stress_coords</span><span class="p">,</span> <span class="n">cat</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take catalog and Stress bounds in 3D (Lon,lat,depth). Locate each earthquake of catalog to the respective 3D grid.</span>
+<span class="sd">    Inputs: </span>
+<span class="sd">        stress_coords </span>
+<span class="sd">            nx6: [lon1,lat1,lon2,lat2,d1,d2]</span>
+<span class="sd">        cat</span>
+<span class="sd">            nx4: [lat,laon,mag, depth]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lon1</span> <span class="o">=</span> <span class="n">stress_coords</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">lon2</span> <span class="o">=</span> <span class="n">stress_coords</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">lat1</span> <span class="o">=</span> <span class="n">stress_coords</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">lat2</span> <span class="o">=</span> <span class="n">stress_coords</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">depth1</span> <span class="o">=</span> <span class="n">stress_coords</span><span class="p">[:,</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">depth2</span> <span class="o">=</span> <span class="n">stress_coords</span><span class="p">[:,</span><span class="mi">5</span><span class="p">]</span>
+    
+    <span class="n">grid_eq</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># cat = AScataBuffer[ AScataBuffer[:,2] &gt;= Mcut ]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stress_coords</span><span class="p">)):</span>
+        <span class="n">flag_coords</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">cat</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">lon1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">cat</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">lat1</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> 
+            <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">cat</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">lon2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">cat</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">lat2</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="n">flag_coords_depth</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span> <span class="n">flag_coords</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">depth1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span> <span class="n">cat</span><span class="p">[:,</span><span class="mi">3</span><span class="p">],</span> <span class="n">cat</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span><span class="o">&lt;</span><span class="n">depth2</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="n">grid_eq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cat</span><span class="p">[</span><span class="n">flag_coords_depth</span><span class="p">]))</span>
+    
+    <span class="n">grid_eq</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grid_eq</span><span class="p">)</span> 
+    <span class="k">return</span> <span class="n">grid_eq</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Asim Khawaja.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
