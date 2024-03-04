@@ -16,10 +16,9 @@ jobs:
           activate-environment: test_aftershocks
           environment-file: environment.yml
       - name: Activate Conda environment
-  	run: |
-    	  source ${{ github.workspace }}/miniconda3/bin/activate
-    	  conda activate test_aftershocks
-
+        run: |
+          source ${{ github.workspace }}/miniconda3/bin/activate
+          conda activate test_aftershocks
       - name: Sphinx build
         run: |
           sphinx-build docs docs/_build
