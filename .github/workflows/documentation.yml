@@ -15,6 +15,7 @@ jobs:
         run: |
           conda env create -f environment.yml
           conda activate test_aftershocks
+          pip install sphinx sphinx_rtd_theme myst_parser
       - name: Sphinx build
         run: |
           sphinx-build docs docs/_build
