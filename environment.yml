@@ -8,7 +8,5 @@ dependencies:
   - shapely=1.8.0
   - pandas=1.4.3
   - mercantile=1.2.1
-  - matplotlib==3.7.0
+  - matplotlib
   - pip
-
-  
