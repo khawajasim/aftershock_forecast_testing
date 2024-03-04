@@ -17,7 +17,7 @@ jobs:
           environment-file: environment.yml
       - name: Install Sphinx
         run: |
-          conda install sphinx sphinx_rtd_theme myst_parser
+          pip install sphinx sphinx_rtd_theme myst_parser
       - name: Sphinx build
         run: |
           sphinx-build docs docs/_build
