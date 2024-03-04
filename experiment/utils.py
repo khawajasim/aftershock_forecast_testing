@@ -5,8 +5,8 @@ Created on Wed Nov  2 17:22:22 2022
 
 @author: khawajasim
 """
-#import numpy
-#import numpy as np
+import numpy
+import numpy as np
 # import json 
 #import mercantile
 import matplotlib.pyplot as plt
