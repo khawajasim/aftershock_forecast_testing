@@ -10,3 +10,6 @@ dependencies:
   - mercantile=1.2.1
   - matplotlib==3.7.0
   - pip
+  - sphinix==5.0.2
+  - sphinx-rtd-theme
+  - myst_parser
