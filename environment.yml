@@ -10,3 +10,6 @@ dependencies:
   - mercantile=1.2.1
   - matplotlib
   - pip
+  - sphinx
+  - sphinx_rtd_theme
+  - sphinx-markdown-tables
