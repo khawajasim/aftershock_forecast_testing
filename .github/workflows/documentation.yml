@@ -20,12 +20,10 @@ jobs:
             sphinx
             sphinx-gallery
             sphinx-rtd-theme
-      
       - name: Install dependencies
         run: |
           pip install -e .
           python -c "import test_aftershocks"
-          
       - name: Sphinx build
         run: |
           sphinx-build docs _build
