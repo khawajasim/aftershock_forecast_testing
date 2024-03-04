@@ -17,7 +17,6 @@ jobs:
           environment-file: environment.yml
       - name: Activate Conda environment
         run: |
-          source ${{ github.workspace }}/miniconda3/bin/activate
           conda activate test_aftershocks
       - name: Sphinx build
         run: |
