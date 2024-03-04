@@ -15,10 +15,6 @@ jobs:
         with:
           activate-environment: test_aftershocks
           environment-file: environment.yml
-      - name: Install dependencies
-        run: |
-          pip install -e .
-          python -c "import test_aftershocks"
       - name: Sphinx build
         run: |
           sphinx-build docs docs/_build
